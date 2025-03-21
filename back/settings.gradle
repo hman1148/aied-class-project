@@ -1,1 +1,4 @@
 rootProject.name = 'ai-tutor'
+include 'src:main:Models'
+findProject(':src:main:Models')?.name = 'Models'
+

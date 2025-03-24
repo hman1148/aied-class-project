@@ -1,8 +1,4 @@
 services:
-  activemq:
-    image: 'apache/activemq-classic:latest'
-    ports:
-      - '61616'
   postgres:
     image: 'postgres:latest'
     environment:
@@ -11,3 +7,14 @@ services:
       - 'POSTGRES_USER=myuser'
     ports:
       - '5432'
+  app:
+    image: 'aied-stock-tutor'
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '8080:8080'
+    volumes:
+      - ./env:/app/.env
+    env_file:
+      - .env

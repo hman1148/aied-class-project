@@ -11,6 +11,16 @@ export type Stock = {
   lastUpdated: Date | null;
 };
 
+export type StockPurchaseRequest = {
+  tickerSymbol: string;
+  quantity: number;
+};
+
+export const initialStockPurchaseRequest = (): StockPurchaseRequest => ({
+  tickerSymbol: '',
+  quantity: 0,
+});
+
 export const inintialStock = (): Stock => ({
   tickerSymobol: '',
   open: 0,

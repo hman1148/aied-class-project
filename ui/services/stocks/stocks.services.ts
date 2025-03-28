@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { EnvironmentStore } from '../../stores';
 import { Observable } from 'rxjs';
+
 import {
   Apis,
   ItemResponse,
@@ -10,6 +10,7 @@ import {
   Stock,
   StockPurchaseRequest,
 } from '../../models';
+import { EnvironmentStore } from '../../stores';
 
 @Injectable({
   providedIn: 'root',

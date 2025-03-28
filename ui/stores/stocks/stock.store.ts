@@ -7,7 +7,7 @@ import {
 } from '@ngrx/signals';
 import { setAllEntities, withEntities } from '@ngrx/signals/entities';
 import { initialStockStoreState } from './stock-store.state';
-import { Stock, StockPurchaseRequest } from '../../models';
+import { Stock } from '../../models';
 import { StockService } from '../../services/stocks/stocks.services';
 import { inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';

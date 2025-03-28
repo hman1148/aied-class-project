@@ -15,7 +15,6 @@ import {
 import { TutorQuestion } from '../../models';
 import { inject } from '@angular/core';
 import { TutorService } from '../../services/tutor/tutor.service';
-import { StockService } from '../../services/stocks/stocks.services';
 import { firstValueFrom } from 'rxjs';
 import { MessageService } from 'primeng/api';
 
@@ -28,47 +27,43 @@ export const TutorStore = signalStore(
   withMethods(
     (
       store,
-      tutorServvice = inject(TutorService),
-      stockService = inject(StockService),
+      tutorService = inject(TutorService),
       messageService = inject(MessageService)
     ) => ({
       loadHistory: async () => {
-        if (store.isEntitiesLoaded()) {
-          return true;
-        }
-
         patchState(store, { isLoading: true });
 
-        try {
-          const { items, success } = await firstValueFrom(
-            tutorServvice.getHistory()
-          );
-
-          if (success) {
-            patchState(
-              store,
-              setAllEntities(items, {
-                collection: collection,
-                selectId: (tutor: TutorQuestion) => tutor.question,
-              }),
-              {
-                isLoading: false,
-                isEntitiesLoaded: true,
-              }
-            );
-          }
-        } catch (error) {
-          console.error(error);
-        }
-        return true;
+        tutorService.getHistory().subscribe({
+          next: ({ items, success }) => {
+            if (success) {
+              patchState(
+                store,
+                setAllEntities(items, {
+                  collection: collection,
+                  selectId: (tutor: TutorQuestion) => tutor.question,
+                }),
+                { isEntitiesLoaded: true }
+              );
+              messageService.add({
+                severity: 'success',
+                summary: 'Success',
+                detail: 'History loaded successfully',
+              });
+            }
+          },
+          error: ({ message }) => {
+            console.error(message);
+          },
+          complete: () => patchState(store, { isLoading: false }),
+        });
       },
 
-      getNewQuestion: async () => {
+      getQuestion: async () => {
         patchState(store, { isLoading: true });
 
         try {
           const { item, success } = await firstValueFrom(
-            tutorServvice.getQuestion()
+            tutorService.getQuestion()
           );
 
           if (success) {
@@ -100,10 +95,72 @@ export const TutorStore = signalStore(
         }
       },
 
+      getStockQuestion: (ticker: string) => {
+        patchState(store, { isLoading: true });
+
+        tutorService.getStockQuestion(ticker).subscribe({
+          next: ({ item, success }) => {
+            if (success) {
+              patchState(
+                store,
+                addEntity(item, {
+                  collection: collection,
+                  selectId: (tutor: TutorQuestion) => tutor.question,
+                }),
+                {
+                  currentTutorQuestion: item,
+                  isLoading: false,
+                }
+              );
+            }
+          },
+          error: ({ message }) => {
+            console.error(message);
+            messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: 'Error getting question',
+            });
+          },
+          complete: () => patchState(store, { isLoading: false }),
+        });
+      },
+
+      getRandomQuestion: () => {
+        patchState(store, { isLoading: true });
+
+        tutorService.getRandomQuestion().subscribe({
+          next: ({ item, success }) => {
+            if (success) {
+              patchState(
+                store,
+                addEntity(item, {
+                  collection: collection,
+                  selectId: (tutor: TutorQuestion) => tutor.question,
+                }),
+                {
+                  currentTutorQuestion: item,
+                  isLoading: false,
+                }
+              );
+            }
+          },
+          error: ({ message }) => {
+            console.error(message);
+            messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: 'Error getting question',
+            });
+          },
+          complete: () => patchState(store, { isLoading: false }),
+        });
+      },
+
       submitAnswer: async (selectedQuestion: string) => {
         patchState(store, { isLoading: true });
 
-        tutorServvice.getAnswer(selectedQuestion).subscribe({
+        tutorService.getAnswer(selectedQuestion).subscribe({
           next: ({ item, success }) => {
             if (success) {
               patchState(store, {
@@ -127,7 +184,7 @@ export const TutorStore = signalStore(
       resetHistory: async () => {
         patchState(store, { isLoading: true });
 
-        tutorServvice.resetHistory().subscribe({
+        tutorService.resetHistory().subscribe({
           next: ({ item, success }) => {
             if (success) {
               patchState(store, removeAllEntities({ collection: collection }));

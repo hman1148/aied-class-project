@@ -23,6 +23,17 @@ export class TutorService {
     return this.http.get<ItemResponse<TutorQuestion>>(url);
   }
 
+  getStockQuestion(ticker: string): Observable<ItemResponse<TutorQuestion>> {
+    const url =
+      this.env.apiUrl() + Apis.Tutor + '/' + Page.Question + '/' + ticker;
+    return this.http.get<ItemResponse<TutorQuestion>>(url);
+  }
+
+  getRandomQuestion(): Observable<ItemResponse<TutorQuestion>> {
+    const url = this.env.apiUrl() + Apis.Tutor + '/' + Page.RandomQuestion;
+    return this.http.get<ItemResponse<TutorQuestion>>(url);
+  }
+
   getAnswer(selectedQuestion: string): Observable<ItemResponse<CorrectAnswer>> {
     const url = this.env.apiUrl() + Apis.Tutor + '/' + Page.Answer;
     return this.http.post<ItemResponse<CorrectAnswer>>(url, selectedQuestion);

@@ -3,17 +3,15 @@ package com.ai_tutor.ai_tutor.Controllers;
 
 import Models.Requests.StudentAnswerRequest;
 import Models.Response.ItemResponse;
-import Models.TutorQuestion;
+import Models.Response.ItemsResponse;
 import com.ai_tutor.ai_tutor.Services.StocksService.GptService;
 import com.ai_tutor.ai_tutor.Services.StocksService.PortfolioService;
 import com.ai_tutor.ai_tutor.Services.StocksService.TutorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 @RestController
 @RequestMapping("/tutor")
@@ -86,13 +84,13 @@ public class TutorController {
     }
 
     @GetMapping("/history")
-    public ResponseEntity<ItemResponse<List<TutorQuestion>>> getQuestionHistory() {
-        ItemResponse<List<TutorQuestion>> response = new ItemResponse<>(questionHistory,
+    public ResponseEntity<ItemsResponse<TutorQuestion>> getQuestionHistory() {
+        ItemsResponse<TutorQuestion> response = new ItemsResponse<>(questionHistory,
                 "Question history retrieved successfully", true);
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/reset-history")
+    @DeleteMapping("/reset-history")
     public ResponseEntity<ItemResponse<String>> resetQuestionHistory() {
         this.questionHistory.clear();
         currentQuestion = null;

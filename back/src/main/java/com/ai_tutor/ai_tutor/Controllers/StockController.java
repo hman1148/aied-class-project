@@ -62,7 +62,7 @@ public class StockController {
         int quantity = request.getQuantity();
 
         Stock stock = new Stock(ticker, quantity, 0, ticker);
-        boolean success = stockService.updateStockFromAPI(stock);
+        boolean success = this.stockService.updateStockFromAPI(stock);
 
         if (!success) {
             return ResponseEntity
@@ -80,6 +80,9 @@ public class StockController {
                     .badRequest()
                     .body(new ItemResponse<String>("", "Insufficient funds", false));
         }
+
+        // Generate a question from gpt service related to the stock they purchased
+
 
         HashMap<String, Object> mapData = new HashMap<>();
         mapData.put("purchased", stock);

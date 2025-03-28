@@ -1,5 +1,6 @@
 package com.ai_tutor.ai_tutor.Services.StocksService;
 
+import Models.Portfolio;
 import Models.Stock;
 import org.springframework.stereotype.Service;
 
@@ -8,50 +9,50 @@ import java.util.ArrayList;
 @Service
 public class PortfolioService {
 
-    private final ArrayList<Stock> portfolio = new ArrayList<>();
-    private double cash = 100_000.0;
+    private final Portfolio portfolio;
+
+    public PortfolioService() {
+        this.portfolio = new Portfolio();
+    }
 
     public boolean addStock(Stock stock) {
         double cost = stock.getPurchasedValue() * stock.getQuantity();
 
-        if (cost > cash) {
+        if (cost > this.portfolio.getCash()) {
             return false;
         }
 
-        cash -= cost;
-        portfolio.add(stock);
+        this.portfolio.setCash(portfolio.getCash() - cost);
+        this.portfolio.addStock(stock);
         return true;
     }
 
-    public ArrayList<Stock> getPortfolio() {
+    public void setProfit(double amount) {
+        this.portfolio.setCash(portfolio.getCash() + amount);
+    }
+
+    public Portfolio getPortfolio() {
         return this.portfolio;
     }
 
     public double getCashRemaining() {
-        return this.cash;
+        return this.portfolio.getCash();
     }
 
     public double getTotalInvested() {
-        return this.portfolio.stream()
-                .mapToDouble(stock -> stock.getPurchasedValue() * stock.getQuantity())
-                .sum();
+        return this.portfolio.getTotalInvested();
     }
 
     public double getTotalCurrentValue() {
-        return this.portfolio.stream()
-                .mapToDouble(stock -> stock.getCurrentValue() * stock.getQuantity())
-                .sum();
+        return this.portfolio.getTotalCurrentValue();
     }
 
     public double getTotalProfit() {
-        return this.portfolio.stream()
-                .mapToDouble(Stock::getProfit)
-                .sum();
+        return this.portfolio.getTotalProfit();
     }
 
     public void resetPortfolio() {
-        this.portfolio.clear();
-        this.cash = 100_000.0;
+        this.portfolio.setStocks(new ArrayList<>());
+        this.portfolio.setCash(100_000.0);
     }
-
 }

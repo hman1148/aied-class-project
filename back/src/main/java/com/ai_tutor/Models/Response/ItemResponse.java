@@ -1,4 +1,4 @@
-package Models.Response;
+package com.ai_tutor.Models.Response;
 
 public class ItemResponse<T> extends ResponseAbstract {
 

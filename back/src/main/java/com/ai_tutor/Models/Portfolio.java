@@ -1,4 +1,4 @@
-package Models;
+package com.ai_tutor.Models;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package Models.Response;
+package com.ai_tutor.Models.Response;
 
 import java.util.List;
 

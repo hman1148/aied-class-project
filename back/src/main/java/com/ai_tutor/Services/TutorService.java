@@ -1,6 +1,6 @@
-package com.ai_tutor.ai_tutor.Services.StocksService;
+package com.ai_tutor.Services;
 
-import Models.TutorQuestion;
+import com.ai_tutor.Models.TutorQuestion;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -18,14 +18,6 @@ public class TutorService {
         this.gptService = gptService;
         this.portfolioService = portfolioService;
         this.answerHistory = new ArrayList<>();
-    }
-    /**
-     * Generates a tutor question using the GptService.
-     *
-     * @return a TutorQuestion object containing the generated question, answers, and correct answer.
-     */
-    public TutorQuestion generateTutorQuestion() {
-        return this.gptService.generateTutorQuestion();
     }
 
     public void handleAnswer(TutorQuestion tutorQuestion) {

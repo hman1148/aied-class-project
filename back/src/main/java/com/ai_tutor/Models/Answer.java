@@ -1,4 +1,4 @@
-package Models;
+package com.ai_tutor.Models;
 
 public class Answer {
     private String option;

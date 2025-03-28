@@ -1,14 +1,18 @@
-package com.ai_tutor.ai_tutor.Controllers;
+package com.ai_tutor.Controllers;
 
 
-import Models.Requests.StudentAnswerRequest;
-import Models.Response.ItemResponse;
-import Models.Response.ItemsResponse;
-import com.ai_tutor.ai_tutor.Services.StocksService.GptService;
-import com.ai_tutor.ai_tutor.Services.StocksService.PortfolioService;
-import com.ai_tutor.ai_tutor.Services.StocksService.TutorService;
+import com.ai_tutor.Models.Requests.StudentAnswerRequest;
+import com.ai_tutor.Models.Response.ItemResponse;
+import com.ai_tutor.Models.Response.ItemsResponse;
+import com.ai_tutor.Models.Stock;
+import com.ai_tutor.Models.TutorQuestion;
+import com.ai_tutor.Services.GptService;
+import com.ai_tutor.Services.PortfolioService;
+import com.ai_tutor.Services.StockService;
+import com.ai_tutor.Services.TutorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,24 +29,67 @@ public class TutorController {
     private final GptService gptService;
 
     @Autowired
+    private final StockService stockService;
+
+    @Autowired
     private final PortfolioService portfolioService;
 
     private TutorQuestion currentQuestion;
     private ArrayList<TutorQuestion> questionHistory = new ArrayList<>();
 
-    public TutorController(TutorService tutorService, GptService gptService, PortfolioService portfolioService) {
+    public TutorController(TutorService tutorService, GptService gptService,
+                           PortfolioService portfolioService, StockService stockService) {
         this.tutorService = tutorService;
         this.gptService = gptService;
         this.portfolioService = portfolioService;
+        this.stockService = stockService;
     }
 
     @GetMapping("/question")
     public ResponseEntity<ItemResponse<TutorQuestion>> getQuestion() {
-        TutorQuestion tutorQuestion = this.tutorService.generateTutorQuestion();
+        TutorQuestion tutorQuestion = this.gptService.generateTutorQuestion();
         this.currentQuestion = tutorQuestion;
 
         ItemResponse<TutorQuestion> response = new ItemResponse<>(tutorQuestion, "Question generated successfully", true);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/question/{ticker}")
+    public ResponseEntity<?> getQuestion(@RequestParam String ticker) {
+        Stock foundStock = this.stockService.getStocksMap().get(ticker);
+
+        try {
+            TutorQuestion tutorQuestion = this.gptService.generateTutorQuestion(foundStock);
+
+            if (tutorQuestion == null) {
+                ItemResponse<String> failedResponse = new ItemResponse<>("Failed response", "Failed to generate question", false);
+                return ResponseEntity.badRequest().body(failedResponse);
+            }
+            ItemResponse<TutorQuestion> successData = new ItemResponse<>(tutorQuestion, "Generated Question", true);
+            return ResponseEntity.ok(successData);
+        } catch (Exception ex) {
+            ItemResponse<String> failedResponse = new ItemResponse<>("Failed response", "Hit a system error", false);
+            return ResponseEntity.badRequest().body(failedResponse);
+        }
+    }
+
+    @GetMapping("/question/random-scenario")
+    public ResponseEntity<?> getScenarioQuestion() {
+        try {
+            String scenario = this.gptService.generateRandomScenario();
+            TutorQuestion tutorQuestion = this.gptService.generateTutorQuestion(scenario);
+
+            if (tutorQuestion == null) {
+                ItemResponse<String> failedResponse = new ItemResponse<>("Failed response", "Failed to generate question", false);
+                return ResponseEntity.badRequest().body(failedResponse);
+            }
+
+            ItemResponse<TutorQuestion> successData = new ItemResponse<>(tutorQuestion, "Generated Question", true);
+            return ResponseEntity.ok(successData);
+        } catch (Exception ex) {
+            ItemResponse<String> failedResponse = new ItemResponse<>("Failed response", "Hit a system error", false);
+            return ResponseEntity.badRequest().body(failedResponse);
+        }
     }
 
     @PostMapping("/answer")

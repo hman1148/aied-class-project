@@ -1,4 +1,4 @@
-package Models.Requests;
+package com.ai_tutor.Models.Requests;
 
 public class StockPurchaseRequest {
 

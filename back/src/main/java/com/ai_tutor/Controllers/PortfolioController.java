@@ -1,8 +1,8 @@
-package com.ai_tutor.ai_tutor.Controllers;
+package com.ai_tutor.Controllers;
 
-import Models.Portfolio;
-import Models.Response.ItemResponse;
-import com.ai_tutor.ai_tutor.Services.StocksService.PortfolioService;
+import com.ai_tutor.Models.Portfolio;
+import com.ai_tutor.Models.Response.ItemResponse;
+import com.ai_tutor.Services.PortfolioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

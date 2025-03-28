@@ -1,3 +1,5 @@
+package com.ai_tutor.Models;
+
 import java.util.List;
 
 public class TutorQuestion {

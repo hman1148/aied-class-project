@@ -1,7 +1,7 @@
-package com.ai_tutor.ai_tutor.Services.StocksService;
+package com.ai_tutor.Services;
 
-import Models.Portfolio;
-import Models.Stock;
+import com.ai_tutor.Models.Portfolio;
+import com.ai_tutor.Models.Stock;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

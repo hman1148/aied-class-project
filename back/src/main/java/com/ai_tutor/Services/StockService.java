@@ -1,6 +1,6 @@
-package com.ai_tutor.ai_tutor.Services.StocksService;
+package com.ai_tutor.Services;
 
-import Models.Stock;
+import com.ai_tutor.Models.Stock;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -19,12 +21,14 @@ public class StockService {
 
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
+    private ArrayList<Stock> stocks;
 
     public StockService() {
         Dotenv dotenv = Dotenv.load();
         this.API_KEY = dotenv.get("ALPHAVANTAGE_API_KEY");
         this.restTemplate = new RestTemplate();
         this.objectMapper = new ObjectMapper();
+        this.stocks = new ArrayList<>();
     }
 
     public boolean updateStockFromAPI(Stock stock) {
@@ -70,6 +74,30 @@ public class StockService {
         } catch (Exception ex) {
             throw new RuntimeException("Failed to load ticker list.", ex);
         }
+    }
+
+    public ArrayList<Stock> getStocks() {
+        List<String> tickers = this.loadTickersFromFile();
+
+        for (String ticker : tickers) {
+            Stock stock = new Stock(ticker, 0, 0, ticker);
+            boolean success = this.updateStockFromAPI(stock);
+
+            if (success) {
+                this.stocks.add(stock);
+            } else {
+                System.out.println("Failed to update stock data for: " + ticker);
+            }
+        }
+        return this.stocks;
+    }
+
+    public HashMap<String, Stock> getStocksMap() {
+        HashMap<String, Stock> stockMap = new HashMap<>();
+        for (Stock stock : this.stocks) {
+            stockMap.put(stock.getTickerSymbol(), stock);
+        }
+        return stockMap;
     }
 
     private double getDouble(JsonNode node, String field) {

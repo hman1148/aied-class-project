@@ -1,12 +1,12 @@
-package com.ai_tutor.ai_tutor.Controllers;
+package com.ai_tutor.Controllers;
 
 
-import Models.Requests.StockPurchaseRequest;
-import Models.Response.ItemResponse;
-import Models.Response.ItemsResponse;
-import Models.Stock;
-import com.ai_tutor.ai_tutor.Services.StocksService.PortfolioService;
-import com.ai_tutor.ai_tutor.Services.StocksService.StockService;
+import com.ai_tutor.Models.Requests.StockPurchaseRequest;
+import com.ai_tutor.Models.Response.ItemResponse;
+import com.ai_tutor.Models.Response.ItemsResponse;
+import com.ai_tutor.Models.Stock;
+import com.ai_tutor.Services.PortfolioService;
+import com.ai_tutor.Services.StockService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,26 +33,14 @@ public class StockController {
 
     @GetMapping("/all")
     public ResponseEntity<ItemsResponse<Stock>> getAllStocks() {
-        List<String> tickers = stockService.loadTickersFromFile();
-
-        List<Stock> stockList = new ArrayList<>();
-        for (String ticker : tickers) {
-            Stock stock = new Stock(ticker, 0, 0, ticker);
-            boolean success = stockService.updateStockFromAPI(stock);
-
-            if (success) {
-                stockList.add(stock);
-            } else {
-                System.out.println("Failed to update stock data for: " + ticker);
-            }
-        }
+        List<Stock> stocks = this.stockService.getStocks();
 
         try {
             Thread.sleep(150000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        ItemsResponse<Stock> response = new ItemsResponse<>(stockList, "Stock data retrieved", true);
+        ItemsResponse<Stock> response = new ItemsResponse<>(stocks, "Stock data retrieved", true);
         return ResponseEntity.ok(response);
     }
 

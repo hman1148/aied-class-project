@@ -1,13 +1,14 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 
 import { DialogModule } from 'primeng/dialog';
 import { SidebarModule } from 'primeng/sidebar';
 import { CardModule } from 'primeng/card';
 import { DividerModule } from 'primeng/divider';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
-import { signalState } from '@ngrx/signals';
+import { patchState, signalState } from '@ngrx/signals';
 import { initialHistoryState } from '../history-component.state';
+import { HistoryStore } from '../../../../../stores';
 
 @Component({
   selector: 'app-history-component',
@@ -23,8 +24,15 @@ import { initialHistoryState } from '../history-component.state';
   templateUrl: './history-component.component.html',
   styleUrl: './history-component.component.scss',
 })
-export class HistoryComponentComponent {
+export class HistoryComponent {
   readonly state = signalState(initialHistoryState());
+  readonly historyStore = inject(HistoryStore);
 
-  onHideSideBar(): void {}
+  onSelectHistoryItem(question: string): void {
+    this.historyStore.getHistoryByQuestion(question);
+  }
+
+  onHideSideBar(): void {
+    patchState(this.state, { visible: false });
+  }
 }

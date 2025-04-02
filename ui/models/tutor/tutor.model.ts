@@ -1,6 +1,7 @@
 import { Answer, initialAnswer } from '../answer/answer.model';
 
 export type TutorQuestion = {
+  id: string;
   question: string;
   answers: Answer[];
   correctAnswer: Answer;
@@ -9,6 +10,7 @@ export type TutorQuestion = {
 };
 
 export const initialTutorQuestion = (): TutorQuestion => ({
+  id: '',
   question: '',
   answers: [],
   correctAnswer: initialAnswer(),

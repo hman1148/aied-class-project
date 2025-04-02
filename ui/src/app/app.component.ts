@@ -3,7 +3,7 @@ import { RouterOutlet } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
 import { MenubarModule } from 'primeng/menubar';
-import { MenuItem } from 'primeng/api';
+import { MenuItem, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { TabViewModule } from 'primeng/tabview';
@@ -12,17 +12,21 @@ import { ChartModule } from 'primeng/chart';
 import { ToastModule } from 'primeng/toast';
 import { SplitterModule } from 'primeng/splitter';
 import { PanelModule } from 'primeng/panel';
-import { AvatarModule } from 'primeng/avatar';
 import { ProgressBarModule } from 'primeng/progressbar';
+import { ProgressSpinner } from 'primeng/progressspinner';
 
 import { HistoryComponent } from './sub-components/history-component/history-component/history-component.component';
 import { StockComponent } from './sub-components/stock-component/stock-component/stock-component.component';
 import { StockStore } from '../../stores/stocks/stock.store';
-import { TutorStore } from '../../stores';
+import { PortfolioStore, TutorStore } from '../../stores';
+import { TableModule } from 'primeng/table';
+import { CommonModule } from '@angular/common';
+import { patchState } from '@ngrx/signals';
 
 @Component({
   selector: 'app-root',
   imports: [
+    CommonModule,
     RouterOutlet,
     RouterOutlet,
     HistoryComponent,
@@ -38,6 +42,8 @@ import { TutorStore } from '../../stores';
     SplitterModule,
     PanelModule,
     ProgressBarModule,
+    ProgressSpinner,
+    TableModule,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
@@ -48,13 +54,21 @@ export class AppComponent implements OnInit {
 
   readonly stockStore = inject(StockStore);
   readonly tutorStore = inject(TutorStore);
+  readonly portfolioStore = inject(PortfolioStore);
+  readonly messageService = inject(MessageService);
 
   title = 'Stock Tutor';
   menuItems: MenuItem[] = [];
   learningProgress: number = 0;
   activeTabIndex: number = 0;
+  totalCorrectQuestions: number = 0;
+  selectedAnswer: string = '';
 
   ngOnInit(): void {
+    this.totalCorrectQuestions = this.tutorStore
+      .tutorEntities()
+      .filter((q) => q.isCorrect).length;
+
     this.menuItems = [
       {
         label: 'Dashboard',
@@ -113,20 +127,58 @@ export class AppComponent implements OnInit {
     };
   }
 
-  calculateLearningProgress(): void {
+  calculateLearningProgress(): number {
     const entities = this.tutorStore.tutorEntities();
     if (entities && entities.length > 0) {
       const correctAnswers = entities.filter((q) => q.isCorrect).length;
       this.learningProgress = (correctAnswers / entities.length) * 100;
     }
+
+    return this.learningProgress;
   }
 
-  showHistory(): void {
-    if (this.historyComponent) {
-      this.historyComponent.state.update((state) => ({
-        ...state,
-        visible: true,
-      }));
+  toggleHistorySidebar(): void {
+    if (!this.historyComponent) return;
+
+    patchState(this.historyComponent.state, {
+      visible: !this.historyComponent.state().visible,
+    });
+  }
+
+  submitAnswer(answer: string): void {
+    if (!answer || !this.tutorStore.currentTutorQuestion()) {
+      return;
     }
+
+    this.tutorStore.submitAnswer();
+
+    const currentQuestion = this.tutorStore.currentTutorQuestion();
+    const selectAnswerObj = currentQuestion.answers.find(
+      (a) => a.option === answer
+    );
+
+    const isCorrect =
+      selectAnswerObj &&
+      currentQuestion.correctAnswer.option == selectAnswerObj.option;
+
+    if (isCorrect) {
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Correct Answer',
+        detail: 'You got it right!',
+      });
+      this.totalCorrectQuestions++;
+      this.calculateLearningProgress();
+
+      this.tutorStore.getRandomQuestion();
+    } else {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Wrong Answer',
+        detail: `The correct answer is ${currentQuestion.correctAnswer.option}`,
+      });
+    }
+
+    this.selectedAnswer = '';
   }
 }

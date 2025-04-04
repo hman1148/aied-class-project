@@ -7,7 +7,7 @@ export type EnvironmentStoreState = {
 };
 
 export const initialEnvironmentState = (): EnvironmentStoreState => ({
-  apiUrl: 'http://localhost:3000',
+  apiUrl: 'http://localhost:8000',
   production: false,
 });
 

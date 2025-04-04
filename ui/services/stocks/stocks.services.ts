@@ -20,14 +20,14 @@ export class StockService {
   readonly http = inject(HttpClient);
 
   getStocks(): Observable<ItemsResponse<Stock>> {
-    const url = this.env.apiUrl() + Apis.Stocks + '/' + Page.GetStocks;
+    const url = this.env.apiUrl() + Apis.Stocks + Page.GetStocks;
     return this.http.get<ItemsResponse<Stock>>(url);
   }
 
   buyStock(
     stockPurchaseRequest: StockPurchaseRequest
   ): Observable<ItemResponse<Stock>> {
-    const url = this.env.apiUrl() + Apis.Stocks + '/' + Page.BuyStocks;
+    const url = this.env.apiUrl() + Apis.Stocks + Page.BuyStocks;
     return this.http.post<ItemResponse<Stock>>(url, stockPurchaseRequest);
   }
 }

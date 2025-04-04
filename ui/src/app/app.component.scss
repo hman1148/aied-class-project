@@ -1,0 +1,245 @@
+.stock-tutor-app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--surface-ground);
+  color: var(--text-color);
+
+  .app-header {
+    background-color: var(--surface-card);
+    box-shadow: 0 2px 4px rgba(0,0,0,.1);
+
+    .header-content {
+      padding: 0.5rem 1.5rem;
+      max-width: 1280px;
+      margin: 0 auto;
+      width: 100%;
+
+      .logo-area {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.5rem;
+
+        .logo-icon {
+          font-size: 1.75rem;
+          color: var(--primary-color);
+          margin-right: 0.75rem;
+        }
+
+        .app-title {
+          font-size: 1.5rem;
+          font-weight: 700;
+          margin: 0;
+          color: var(--primary-color);
+        }
+      }
+    }
+  }
+
+  .app-content {
+    flex: 1;
+    padding: 1rem;
+    max-width: 1280px;
+    margin: 0 auto;
+    width: 100%;
+
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--text-color);
+    }
+
+    .section-description {
+      color: var(--text-color-secondary);
+      margin-bottom: 1.5rem;
+    }
+  }
+
+  .app-footer {
+    background-color: var(--surface-card);
+    padding: 1.5rem;
+
+    .footer-content {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      .copyright {
+        color: var(--text-color-secondary);
+        font-size: 0.875rem;
+      }
+    }
+  }
+
+  // Portfolio summary styles
+  .portfolio-summary {
+    .value-display, .growth-display {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+
+      .label {
+        color: var(--text-color-secondary);
+      }
+
+      .value {
+        font-weight: 600;
+      }
+    }
+  }
+
+  // Learning progress styles
+  .learning-progress {
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+
+      .progress-label {
+        color: var(--text-color-secondary);
+      }
+
+      .progress-value {
+        font-weight: 600;
+      }
+    }
+
+    .progress-stats {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 1.25rem;
+
+      .stat-item {
+        text-align: center;
+        flex: 1;
+
+        .stat-label {
+          color: var(--text-color-secondary);
+          font-size: 0.875rem;
+          margin-bottom: 0.25rem;
+        }
+
+        .stat-value {
+          font-size: 1.25rem;
+          font-weight: 600;
+        }
+      }
+    }
+  }
+
+  // Recent activity styles
+  .activity-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    .activity-item {
+      display: flex;
+      align-items: flex-start;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--surface-border);
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .activity-icon {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 0.75rem;
+
+        &.activity-success {
+          background-color: var(--green-100);
+          color: var(--green-600);
+        }
+
+        &.activity-error {
+          background-color: var(--red-100);
+          color: var(--red-600);
+        }
+      }
+
+      .activity-content {
+        flex: 1;
+
+        .activity-title {
+          font-weight: 500;
+          margin-bottom: 0.25rem;
+        }
+
+        .activity-time {
+          color: var(--text-color-secondary);
+          font-size: 0.875rem;
+        }
+      }
+    }
+  }
+
+  // Empty state styles
+  .empty-state {
+    text-align: center;
+    padding: 2rem 0;
+
+    .empty-icon {
+      font-size: 2rem;
+      color: var(--primary-color);
+      margin-bottom: 1rem;
+    }
+  }
+
+  // Stock highlights styles
+  .stock-highlights {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1rem;
+
+    .stock-highlight-item {
+      flex: 1;
+      min-width: 150px;
+      background-color: var(--surface-section);
+      border-radius: var(--border-radius);
+      padding: 1rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,.1);
+
+      .stock-symbol {
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+
+      .stock-price {
+        font-size: 1.25rem;
+        margin-bottom: 0.25rem;
+      }
+    }
+  }
+
+  // Color helpers
+  .text-green-600 {
+    color: var(--green-600);
+  }
+
+  .text-red-600 {
+    color: var(--red-600);
+  }
+
+  // Chart container
+  .portfolio-chart-container {
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  // Learning modules
+  .learning-module {
+    p {
+      margin-bottom: 1rem;
+    }
+  }
+}

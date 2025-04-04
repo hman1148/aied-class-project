@@ -40,7 +40,7 @@ export const TutorStore = signalStore(
                 store,
                 setAllEntities(items, {
                   collection: collection,
-                  selectId: (tutor: TutorQuestion) => tutor.question,
+                  selectId: (tutor: TutorQuestion) => tutor.id,
                 }),
                 { isEntitiesLoaded: true }
               );
@@ -71,7 +71,7 @@ export const TutorStore = signalStore(
               store,
               addEntity(item, {
                 collection: collection,
-                selectId: (tutor: TutorQuestion) => tutor.question,
+                selectId: (tutor: TutorQuestion) => tutor.id,
               }),
               {
                 currentTutorQuestion: item,
@@ -96,8 +96,6 @@ export const TutorStore = signalStore(
       },
 
       getStockQuestion: (ticker: string) => {
-        patchState(store, { isLoading: true });
-
         tutorService.getStockQuestion(ticker).subscribe({
           next: ({ item, success }) => {
             if (success) {
@@ -136,7 +134,7 @@ export const TutorStore = signalStore(
                 store,
                 addEntity(item, {
                   collection: collection,
-                  selectId: (tutor: TutorQuestion) => tutor.question,
+                  selectId: (tutor: TutorQuestion) => tutor.id,
                 }),
                 {
                   currentTutorQuestion: item,
@@ -157,28 +155,28 @@ export const TutorStore = signalStore(
         });
       },
 
-      submitAnswer: async (selectedQuestion: string) => {
-        patchState(store, { isLoading: true });
-
-        tutorService.getAnswer(selectedQuestion).subscribe({
-          next: ({ item, success }) => {
-            if (success) {
-              patchState(store, {
-                currentCorrecAnswer: item,
-                isLoading: false,
+      submitAnswer: async () => {
+        tutorService
+          .getAnswer(store.currentTutorQuestion().question)
+          .subscribe({
+            next: ({ item, success }) => {
+              if (success) {
+                patchState(store, {
+                  currentCorrecAnswer: item,
+                  isLoading: false,
+                });
+              }
+            },
+            error: ({ message }) => {
+              console.error(message);
+              messageService.add({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'Error getting answer',
               });
-            }
-          },
-          error: ({ message }) => {
-            console.error(message);
-            messageService.add({
-              severity: 'error',
-              summary: 'Error',
-              detail: 'Error getting answer',
-            });
-          },
-          complete: () => patchState(store, { isLoading: false }),
-        });
+            },
+            complete: () => patchState(store, { isLoading: false }),
+          });
       },
 
       resetHistory: async () => {

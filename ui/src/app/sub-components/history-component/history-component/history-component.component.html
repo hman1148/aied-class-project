@@ -1,5 +1,5 @@
 <p-sidebar
-   [(visible)]="state().visible"
+   [(visible)]="this.state().visible"
     position="right"
     [style]="{width: '30rem'}"
     [baseZIndex]="1000"
@@ -15,15 +15,7 @@
           <p-progressSpinner styleClass="mb-3"></p-progressSpinner>
           <span class="text-secondary">Loading your learning history...</span>
         </div>
-      } @else if (state().error) {
-        <div class="flex flex-column align-items-center justify-content-center min-h-screen">
-          <i class="pi pi-exclamation-triangle text-6xl text-red-500 mb-3"></i>
-          <p class="text-red-500 mb-3">{{ state().error }}</p>
-          <button pButton label="Try Again" icon="pi pi-refresh"
-                  (click)="loadHistoryData()"
-                  class="p-button-outlined"></button>
-        </div>
-      } @else if (state().historyItems.length === 0) {
+      } @else if (historyStore.historyEntities().length === 0) {
         <div class="flex flex-column align-items-center justify-content-center min-h-screen">
           <i class="pi pi-info-circle text-6xl text-blue-500 mb-3"></i>
           <p class="text-secondary mb-2">You don't have any learning history yet.</p>
@@ -31,24 +23,18 @@
         </div>
       } @else {
         <div>
-          @for (item of state().historyItems; track item.id) {
+          @for (item of historyStore.historyEntities(); track item.question) {
             <p-card
-              [styleClass]="state().selectedItem?.id === item.id ? 'mb-3 border-left-3 border-primary surface-hover' : 'mb-3 surface-hover'"
-              (click)="selectHistoryItem(item.id)"
+              [styleClass]="historyStore.selectedTutorQuestion().question === item.question ? 'mb-3 border-left-3 border-primary surface-hover' : 'mb-3 surface-hover'"
+              (click)="onSelectHistoryItem(item.question)"
               [style]="{'cursor': 'pointer', 'transition': 'box-shadow 0.2s'}">
               <ng-template pTemplate="title">
-                <div class="text-lg font-medium">{{ item.topic }}</div>
-              </ng-template>
-              <ng-template pTemplate="subtitle">
-                <div class="flex align-items-center gap-2">
-                  <i class="pi pi-calendar"></i>
-                  <span class="text-sm text-secondary">{{ item.timestamp | date:'medium' }}</span>
-                </div>
+                <div class="text-lg font-medium">{{ item.question }}</div>
               </ng-template>
             </p-card>
           }
 
-          @if (state().selectedItem) {
+          @if (historyStore.selectedTutorQuestion()) {
             <div class="mt-4">
               <p-divider></p-divider>
               <h3 class="text-xl font-medium text-primary mb-3">Session Details</h3>
@@ -58,7 +44,7 @@
                   <div class="text-lg font-medium">Question</div>
                 </ng-template>
                 <ng-template pTemplate="content">
-                  <p>{{ state().selectedItem.question }}</p>
+                  <p>{{historyStore.selectedTutorQuestion().question }}</p>
                 </ng-template>
               </p-card>
 
@@ -67,7 +53,7 @@
                   <div class="text-lg font-medium">Answer</div>
                 </ng-template>
                 <ng-template pTemplate="content">
-                  <p>{{ state().selectedItem.answer }}</p>
+                  <p>{{ historyStore.selectedTutorQuestion.correctAnswer }}</p>
                 </ng-template>
               </p-card>
             </div>

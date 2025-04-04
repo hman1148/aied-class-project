@@ -1,0 +1,196 @@
+<div class="stock-component-container">
+  <!-- Loading State -->
+  @if (stockStore.isLoading()) {
+    <div class="flex flex-column align-items-center justify-content-center py-5">
+      <p-progressSpinner styleClass="mb-3"></p-progressSpinner>
+      <span class="text-secondary">Loading stocks...</span>
+    </div>
+  } @else {
+    <!-- Stock Data Table -->
+    <p-table [value]="stockStore.stockEntities()"
+             [tableStyle]="{'min-width': '60rem'}"
+             [paginator]="stockStore.stockEntities().length > 10"
+             [rows]="10"
+             [rowHover]="true"
+             selectionMode="single"
+             [(selection)]="this.state().selectedStock"
+             (onRowSelect)="onRowSelect($event)"
+             styleClass="p-datatable-sm p-datatable-gridlines">
+      <ng-template pTemplate="caption">
+        <div class="flex justify-content-between align-items-center">
+          <h5 class="m-0">Available Stocks</h5>
+          <button pButton icon="pi pi-refresh" label="Refresh"
+                  (click)="stockStore.resolveStocks()"
+                  [disabled]="stockStore.isLoading()"></button>
+        </div>
+      </ng-template>
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="tickerSymobol">Symbol <p-sortIcon field="tickerSymobol"></p-sortIcon></th>
+          <th pSortableColumn="price">Price <p-sortIcon field="price"></p-sortIcon></th>
+          <th pSortableColumn="percentChange">Change <p-sortIcon field="percentChange"></p-sortIcon></th>
+          <th pSortableColumn="volume">Volume <p-sortIcon field="volume"></p-sortIcon></th>
+          <th pSortableColumn="open">Open <p-sortIcon field="open"></p-sortIcon></th>
+          <th pSortableColumn="high">High <p-sortIcon field="high"></p-sortIcon></th>
+          <th pSortableColumn="low">Low <p-sortIcon field="low"></p-sortIcon></th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-stock>
+        <tr [pSelectableRow]="stock">
+          <td class="font-medium">{{ stock.tickerSymobol }}</td>
+          <td>${{ stock.price | number:'1.2-2' }}</td>
+          <td [class]="stock.percentChange >= 0 ? 'text-green-600' : 'text-red-600'">
+            {{ stock.percentChange >= 0 ? '+' : '' }}{{ stock.percentChange | number:'1.2-2' }}%
+          </td>
+          <td>{{ stock.volume | number }}</td>
+          <td>${{ stock.open | number:'1.2-2' }}</td>
+          <td>${{ stock.high | number:'1.2-2' }}</td>
+          <td>${{ stock.low | number:'1.2-2' }}</td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="7" class="text-center p-4">
+            <div class="flex flex-column align-items-center">
+              <i class="pi pi-info-circle text-3xl text-blue-500 mb-3"></i>
+              <span>No stocks available at the moment.</span>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+
+    <!-- Purchase Panel -->
+    @if (stockStore.currentStock()) {
+      <div class="purchase-panel p-card p-4 mt-4">
+        <div class="grid">
+          <div class="col-12 md:col-7">
+            <div class="flex flex-column md:flex-row md:align-items-center">
+              <h3 class="m-0 mb-2 md:mb-0 md:mr-3">Selected:
+                <span class="text-primary font-medium">{{ stockStore.currentStock().tickerSymobol }}</span>
+              </h3>
+              <div class="purchase-details">
+                <div class="price-display">Current Price:
+                  <span class="font-medium">${{ stockStore.currentStock().price | number:'1.2-2' }}</span>
+                </div>
+                <div>Daily Change:
+                  <span [class]="stockStore.currentStock().changePercent >= 0 ? 'text-green-600' : 'text-red-600'">
+                    {{ stockStore.currentStock().changePercent >= 0 ? '+' : '' }}{{ stockStore.currentStock().changePercent | number:'1.2-2' }}%
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 md:col-5">
+            <form class="p-fluid flex flex-column md:flex-row align-items-center gap-3">
+              <div class="quantity-field flex-auto">
+                <label for="quantity" class="block mb-1">Quantity</label>
+                <p-inputNumber id="quantity"
+                              [(ngModel)]="state().quantity"
+                              [ngModelOptions]="{standalone: true}"
+                              [showButtons]="true"
+                              [min]="1"
+                              buttonLayout="horizontal"
+                              inputId="horizontal"
+                              decrementButtonClass="p-button-secondary"
+                              incrementButtonClass="p-button-secondary">
+                </p-inputNumber>
+              </div>
+              <div class="flex-auto mt-3 md:mt-4">
+                <button pButton
+                        label="Purchase Stock"
+                        icon="pi pi-shopping-cart"
+                        class="p-button-success"
+                        [disabled]="state().quantity <= 0"
+                        (click)="onPurchase()"></button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    }
+  }
+</div>
+
+<!-- Purchase Dialog with Tutor Question -->
+<p-dialog [(visible)]="state().showPurchasingDialog"
+          [modal]="true"
+          [closable]="false"
+          [closeOnEscape]="false"
+          header="Complete Stock Purchase"
+          [style]="{ width: '500px' }">
+  <div class="purchase-dialog-content">
+    <!-- Purchase Summary -->
+    @if (stockStore.currentStock()) {
+      <div class="purchase-summary mb-4">
+        <div class="surface-100 p-3 border-round">
+          <div class="flex justify-content-between mb-3">
+            <span class="font-medium">Stock:</span>
+            <span class="font-bold">{{ stockStore.currentStock().tickerSymobol }}</span>
+          </div>
+          <div class="flex justify-content-between mb-3">
+            <span class="font-medium">Price per Share:</span>
+            <span>${{ stockStore.currentStock().price | number:'1.2-2' }}</span>
+          </div>
+          <div class="flex justify-content-between mb-3">
+            <span class="font-medium">Quantity:</span>
+            <span>{{ state().quantity }}</span>
+          </div>
+          <div class="divider my-3"></div>
+          <div class="flex justify-content-between">
+            <span class="font-medium">Total Cost:</span>
+            <span class="font-bold">${{ (stockStore.currentStock().price * state().quantity) | number:'1.2-2' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tutor Question Section -->
+      <div class="tutor-question-section">
+        <h3 class="text-lg font-medium mb-3">Answer this question about {{ stockStore.currentStock().tickerSymobol }} to complete your purchase:</h3>
+
+        @if (tutorStore.isLoading()) {
+          <div class="flex flex-column align-items-center justify-content-center p-4">
+            <p-progressSpinner [style]="{width: '50px', height: '50px'}" styleClass="mb-2"></p-progressSpinner>
+            <span>Loading question...</span>
+          </div>
+        } @else if (tutorStore.currentTutorQuestion()) {
+          <div class="question-container surface-hover p-3 border-round">
+            <div class="question mb-3">{{ tutorStore.currentTutorQuestion().question }}</div>
+
+            <div class="answer-options">
+              @for (option of tutorStore.currentTutorQuestion().answers; track option) {
+                <div class="field-radiobutton mb-2">
+                  <p-radioButton [inputId]="option.option"
+                                name="answer"
+                                [value]="option"
+                                [(ngModel)]="state().selectedAnswer">
+                  </p-radioButton>
+                  <label [for]="option" class="ml-2">{{ option }}</label>
+                </div>
+              }
+            </div>
+          </div>
+        } @else {
+          <div class="flex flex-column align-items-center justify-content-center p-4">
+            <i class="pi pi-exclamation-circle text-3xl text-yellow-500 mb-2"></i>
+            <span class="text-center">Failed to load question. Please try again.</span>
+            <button pButton label="Reload Question" icon="pi pi-refresh"
+                    (click)="loadTutorQuestion()"
+                    class="p-button-outlined mt-3"></button>
+          </div>
+        }
+      </div>
+
+      <!-- Dialog Footer -->
+      <div class="dialog-footer flex justify-content-between mt-4">
+        <button pButton label="Cancel" icon="pi pi-times" class="p-button-outlined"
+                (click)="onCancelPurchase()"></button>
+
+        <button pButton label="Submit Answer & Purchase" icon="pi pi-check" class="p-button-success"
+                [disabled]="!state().selectedAnswer || tutorStore.isLoading()"
+                (click)="tutorStore.submitAnswer()"></button>
+      </div>
+    }
+  </div>
+</p-dialog>

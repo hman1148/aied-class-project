@@ -1,0 +1,51 @@
+.stock-component-container {
+  padding: 1rem;
+
+  ::ng-deep {
+    .p-datatable .p-datatable-thead > tr > th {
+      background-color: var(--surface-section);
+      font-weight: 600;
+    }
+
+    .p-datatable .p-datatable-tbody > tr.p-highlight {
+      background-color: var(--primary-50);
+    }
+
+    .p-datatable .p-datatable-tbody > tr:hover {
+      background-color: var(--surface-hover);
+    }
+  }
+}
+
+.purchase-panel {
+  background-color: var(--surface-card);
+  border-radius: var(--border-radius);
+  box-shadow: var(--card-shadow);
+}
+
+.purchase-dialog-content {
+  .purchase-summary {
+    .divider {
+      border-top: 1px solid var(--surface-border);
+    }
+  }
+
+  .tutor-question-section {
+    .question-container {
+      background-color: var(--surface-ground);
+      border: 1px solid var(--surface-border);
+    }
+
+    .question {
+      font-weight: 500;
+    }
+  }
+}
+
+.text-green-600 {
+  color: var(--green-600);
+}
+
+.text-red-600 {
+  color: var(--red-600);
+}

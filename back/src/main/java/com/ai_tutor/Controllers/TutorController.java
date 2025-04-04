@@ -35,7 +35,7 @@ public class TutorController {
     private final PortfolioService portfolioService;
 
     private TutorQuestion currentQuestion;
-    private ArrayList<TutorQuestion> questionHistory = new ArrayList<>();
+    private final ArrayList<TutorQuestion> questionHistory = new ArrayList<>();
 
     public TutorController(TutorService tutorService, GptService gptService,
                            PortfolioService portfolioService, StockService stockService) {

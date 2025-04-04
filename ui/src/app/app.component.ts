@@ -1,4 +1,6 @@
 import { Component, inject, OnInit, ViewChild } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { patchState } from '@ngrx/signals';
 import { FormsModule } from '@angular/forms';
 
 import { MenubarModule } from 'primeng/menubar';
@@ -13,15 +15,13 @@ import { SplitterModule } from 'primeng/splitter';
 import { PanelModule } from 'primeng/panel';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { ProgressSpinner } from 'primeng/progressspinner';
+import { TableModule } from 'primeng/table';
+import { RadioButtonModule } from 'primeng/radiobutton';
 
 import { HistoryComponent } from './sub-components/history-component/history-component/history-component.component';
 import { StockComponent } from './sub-components/stock-component/stock-component/stock-component.component';
 import { StockStore } from '../../stores/stocks/stock.store';
 import { PortfolioStore, TutorStore } from '../../stores';
-import { TableModule } from 'primeng/table';
-import { CommonModule } from '@angular/common';
-import { patchState } from '@ngrx/signals';
-import { RadioButtonModule } from 'primeng/radiobutton';
 
 @Component({
   selector: 'app-root',
@@ -91,40 +91,6 @@ export class AppComponent implements OnInit {
         command: () => (this.activeTabIndex = 3),
       },
     ];
-  }
-
-  get portfolioChartData() {
-    return {
-      labels: [
-        'Technology',
-        'Healthcare',
-        'Finance',
-        'Energy',
-        'Consumer Goods',
-      ],
-      datasets: [
-        {
-          data: [40, 20, 15, 10, 15],
-          backgroundColor: [
-            '#FF6384',
-            '#36A2EB',
-            '#FFCE56',
-            '#4BC0C0',
-            '#9966FF',
-          ],
-        },
-      ],
-    };
-  }
-
-  get chartOptions() {
-    return {
-      plugins: {
-        legend: {
-          position: 'bottom',
-        },
-      },
-    };
   }
 
   calculateLearningProgress(): number {

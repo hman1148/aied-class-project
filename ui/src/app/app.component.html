@@ -1,5 +1,4 @@
 <div class="stock-tutor-app">
-  <!-- Header with glass effect and improved styling -->
   <header class="app-header">
     <div class="header-content">
       <div class="logo-area">
@@ -27,7 +26,7 @@
       <!-- Dashboard Tab -->
       <p-tabPanel header="Dashboard">
         <div class="dashboard-header">
-          <h1 class="welcome-title">Welcome to Your Financial Dashboard</h1>
+          <h1 class="welcome-title">Welcome to Your Financial Tutor Dashboard</h1>
           <p class="welcome-subtitle">Track your investments, learn about stocks, and grow your portfolio</p>
         </div>
 
@@ -76,6 +75,7 @@
           </div>
 
           <!-- Learning Progress Card -->
+
           <div class="col-12 md:col-6 lg:col-4">
             <p-panel header="Learning Progress" styleClass="premium-panel">
               <ng-template pTemplate="icons">
@@ -119,6 +119,7 @@
           </div>
 
           <!-- Recent Activity Card -->
+
           <div class="col-12 md:col-6 lg:col-4">
             <p-panel header="Recent Activity" styleClass="premium-panel">
               <ng-template pTemplate="icons">
@@ -222,7 +223,7 @@
           </div>
 
           <!-- Stock Component Integration -->
-          <app-stock-component></app-stock-component>
+          <app-stock-component />
         </div>
       </p-tabPanel>
 
@@ -445,19 +446,11 @@
         <i class="pi pi-chart-line"></i>
         <span>{{ title }}</span>
       </div>
-      <div class="footer-links">
-        <a href="#">About</a>
-        <a href="#">Privacy</a>
-        <a href="#">Terms</a>
-        <a href="#">Help</a>
-      </div>
-      <div class="copyright">© 2024 Stock Learning Platform. All rights reserved.</div>
     </div>
   </footer>
 
   <!-- History Component (This was missing) -->
-  <app-history-component></app-history-component>
-
+  <app-history-component />
   <!-- Toast Messages for notifications -->
   <p-toast position="bottom-right"></p-toast>
 </div>

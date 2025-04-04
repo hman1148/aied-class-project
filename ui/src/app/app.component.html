@@ -1,60 +1,74 @@
 <div class="stock-tutor-app">
+  <!-- Header with glass effect and improved styling -->
   <header class="app-header">
-    <div class="logo-area">
-      <i class="pi pi-chart-line logo-icon"></i>
-      <h1 class="app-title"> {{ title}} </h1>
-    </div>
+    <div class="header-content">
+      <div class="logo-area">
+        <i class="pi pi-chart-line logo-icon"></i>
+        <h1 class="app-title">{{ title }}</h1>
+      </div>
 
-    <p-menubar [model]="menuItems">
-      <ng-template pTemplate="end">
-        <p-button pButton label="Learning History"
-          icon="pi pi-history"
-          class="p-button-text"
-          (onClick)="toggleHistorySidebar()"
-          />
-      </ng-template>
-    </p-menubar>
+      <p-menubar [model]="menuItems" styleClass="premium-menu">
+        <ng-template pTemplate="end">
+          <div class="header-actions">
+            <p-button
+              label="Learning History"
+              icon="pi pi-history"
+              class="p-button-text"
+              (click)="toggleHistorySidebar()"
+            ></p-button>
+          </div>
+        </ng-template>
+      </p-menubar>
+    </div>
   </header>
 
   <main class="app-content">
-    <p-tabView [(activeIndex)]="activeTabIndex">
+    <p-tabView [(activeIndex)]="activeTabIndex" styleClass="premium-tabs">
       <!-- Dashboard Tab -->
-       <p-tabPanel header="Dashboard">
+      <p-tabPanel header="Dashboard">
+        <div class="dashboard-header">
+          <h1 class="welcome-title">Welcome to Your Financial Dashboard</h1>
+          <p class="welcome-subtitle">Track your investments, learn about stocks, and grow your portfolio</p>
+        </div>
+
         <div class="grid">
+          <!-- Portfolio Summary Card -->
           <div class="col-12 md:col-6 lg:col-4">
-            <p-panel header="Portfolio Summary">
+            <p-panel header="Portfolio Summary" styleClass="premium-panel">
+              <ng-template pTemplate="icons">
+                <i class="pi pi-wallet panel-icon"></i>
+              </ng-template>
               <div class="portfolio-summary">
                 @if (portfolioStore.isLoading()) {
                   <div class="loading-state">
-                    <p-progressSpinner [style]="{'width': '50px', 'height': '50px'}" styleClass="mb-2" />
-                    <span>Loading portfolio data ...</span>
+                    <p-progressSpinner [style]="{'width': '50px', 'height': '50px'}" styleClass="mb-2"></p-progressSpinner>
+                    <span>Loading portfolio data...</span>
                   </div>
                 } @else if (portfolioStore.currentPortfolio()) {
-                  <div class="value-display">
-                    <span class="label">Cash:</span>
-                    <span class="value">${{ portfolioStore.currentPortfolio().cash | number:'1.2-2' }}</span>
-                  </div>
-                  <div class="value-display">
-                    <span class="label">Current Value:</span>
-                    <span class="value">${{ portfolioStore.calculatePortfolioGrowth() | number:'1.2-2' }}</span>
-                  </div>
-                  <div class="growth-display">
-                    <span class="label">Growth:</span>
-                    <span class="value" [class]="portfolioStore.calculatePortfolioGrowth() >= 0 ? 'text-green-600' : 'text-red-600'">
-                      {{ portfolioStore.calculatePortfolioGrowth() >= 0 ? '+' : '' }}{{ portfolioStore.calculatePortfolioGrowth() | number:'1.2-2' }}%
-                    </span>
+                  <div class="portfolio-metrics">
+                    <div class="metric-card">
+                      <span class="metric-label">Available Cash</span>
+                      <span class="metric-value">${{ portfolioStore.currentPortfolio().cash | number:'1.2-2' }}</span>
+                    </div>
+                    <div class="metric-card">
+                      <span class="metric-label">Total Value</span>
+                      <span class="metric-value">${{ portfolioStore.calculatePortfolioGrowth() | number:'1.2-2' }}</span>
+                    </div>
+                    <div class="metric-card">
+                      <span class="metric-label">Growth</span>
+                      <span class="metric-value" [ngClass]="portfolioStore.calculatePortfolioGrowth() >= 0 ? 'text-green-600' : 'text-red-600'">
+                        {{ portfolioStore.calculatePortfolioGrowth() >= 0 ? '+' : '' }}{{ portfolioStore.calculatePortfolioGrowth() | number:'1.2-2' }}%
+                      </span>
+                    </div>
                   </div>
                   <p-divider></p-divider>
-                  <div class="portfolio-chart">
-                    <p-chart type="doughnut" [data]="portfolioChartData" [options]="chartOptions" height="200px"></p-chart>
-                  </div>
                 } @else {
                   <div class="empty-portfolio">
-                    <i class="pi pi-dollar text-4xl text-primary mb-3"></i>
-                    <p>No portfolio data available.</p>
+                    <i class="pi pi-dollar text-6xl text-primary mb-3 fade-in"></i>
+                    <p>Start your investment journey today!</p>
                     <button pButton label="Start Investing" icon="pi pi-plus-circle"
-                            (onClick)="activeTabIndex = 1"
-                            class="p-button-outlined mt-3"></button>
+                            (click)="activeTabIndex = 1"
+                            class="p-button-outlined mt-3 premium-button"></button>
                   </div>
                 }
               </div>
@@ -63,43 +77,53 @@
 
           <!-- Learning Progress Card -->
           <div class="col-12 md:col-6 lg:col-4">
-            <p-panel header="Learning Progress">
+            <p-panel header="Learning Progress" styleClass="premium-panel">
+              <ng-template pTemplate="icons">
+                <i class="pi pi-book panel-icon"></i>
+              </ng-template>
               <div class="learning-progress">
-                <div class="progress-header">
-                  <span class="progress-label">Learning Completion</span>
-                  <span class="progress-value">{{ calculateLearningProgress() | number:'1.0-0' }}%</span>
+                <div class="learning-header">
+                  <span class="progress-label">Knowledge Progress</span>
+                  <span class="progress-percentage">{{ calculateLearningProgress() | number:'1.0-0' }}%</span>
                 </div>
-                <p-progressBar [value]="calculateLearningProgress()" [showValue]="false" class="mb-3"></p-progressBar>
+                <p-progressBar [value]="calculateLearningProgress()" [showValue]="false" styleClass="custom-progress mb-3"></p-progressBar>
 
                 <div class="progress-stats">
-                  <div class="stat-item">
-                    <div class="stat-label">Questions Answered</div>
-                    <div class="stat-value">{{ tutorStore.tutorEntities().length }}</div>
+                  <div class="stat-card">
+                    <i class="pi pi-question-circle stat-icon"></i>
+                    <div class="stat-content">
+                      <span class="stat-value">{{ tutorStore.tutorEntities().length }}</span>
+                      <span class="stat-label">Questions Answered</span>
+                    </div>
                   </div>
-                  <div class="stat-item">
-                    <div class="stat-label">Correct Answers</div>
-                    <div class="stat-value">
-                      {{ totalCorrectQuestions }}
+                  <div class="stat-card">
+                    <i class="pi pi-check-circle stat-icon correct-icon"></i>
+                    <div class="stat-content">
+                      <span class="stat-value">{{ totalCorrectQuestions }}</span>
+                      <span class="stat-label">Correct Answers</span>
                     </div>
                   </div>
                 </div>
 
                 @if (tutorStore.tutorEntities().length > 0) {
                   <button pButton label="View Learning History" icon="pi pi-list"
-                          class="p-button-outlined mt-3 w-full"
-                          (onClick)="toggleHistorySidebar()"></button>
+                          class="p-button-outlined mt-3 w-full premium-button"
+                          (click)="toggleHistorySidebar()"></button>
                 } @else {
                   <button pButton label="Start Learning" icon="pi pi-book"
-                          class="p-button-outlined mt-3 w-full"
-                          (onClick)="activeTabIndex = 3"></button>
+                          class="p-button-outlined mt-3 w-full premium-button"
+                          (click)="activeTabIndex = 3"></button>
                 }
               </div>
             </p-panel>
           </div>
 
-           <!-- Recent Activity Card -->
-           <div class="col-12 md:col-6 lg:col-4">
-            <p-panel header="Recent Activity">
+          <!-- Recent Activity Card -->
+          <div class="col-12 md:col-6 lg:col-4">
+            <p-panel header="Recent Activity" styleClass="premium-panel">
+              <ng-template pTemplate="icons">
+                <i class="pi pi-clock panel-icon"></i>
+              </ng-template>
               <div class="recent-activity">
                 @if (tutorStore.isLoading()) {
                   <div class="loading-state">
@@ -109,86 +133,108 @@
                 } @else if (tutorStore.tutorEntities().length > 0) {
                   <ul class="activity-list">
                     @for (item of tutorStore.tutorEntities().slice(0, 5); track item.id) {
-                      <li class="activity-item">
-                        <div class="activity-icon" [class]="item.isCorrect ? 'activity-success' : 'activity-error'">
-                          <i class="pi" [class]="item.isCorrect ? 'pi-check-circle' : 'pi-times-circle'"></i>
+                      <li class="activity-item animate-in">
+                        <div class="activity-icon" [ngClass]="item.isCorrect ? 'activity-success' : 'activity-error'">
+                          <i class="pi" [ngClass]="item.isCorrect ? 'pi-check-circle' : 'pi-times-circle'"></i>
                         </div>
                         <div class="activity-content">
                           <div class="activity-title">{{ item.question }}</div>
+                          <div class="activity-time">
+                            <i class="pi pi-calendar-times mr-1"></i> Recently
+                          </div>
                         </div>
                       </li>
                     }
                   </ul>
                 } @else {
                   <div class="empty-state">
-                    <i class="pi pi-info-circle empty-icon"></i>
+                    <i class="pi pi-info-circle text-5xl text-primary mb-3"></i>
                     <p>No recent learning activity.</p>
                     <button pButton label="Start Learning" icon="pi pi-book"
-                            class="p-button-sm"
-                            (onClick)="activeTabIndex = 3"></button>
+                            class="p-button-sm premium-button"
+                            (click)="activeTabIndex = 3"></button>
                   </div>
                 }
               </div>
             </p-panel>
           </div>
-             <!-- Market Overview Card -->
+
+          <!-- Market Overview Card -->
           <div class="col-12">
-            <p-panel header="Market Overview">
+            <p-panel header="Market Overview" styleClass="premium-panel">
+              <ng-template pTemplate="icons">
+                <i class="pi pi-globe panel-icon"></i>
+              </ng-template>
               <div class="market-overview">
                 @if (stockStore.isLoading()) {
                   <div class="loading-state">
-                    <p-progressSpinner mode="indeterminate" [style]="{'height': '6px'}"></p-progressSpinner>
+                    <p-progressSpinner [style]="{'width': '50px', 'height': '50px'}" styleClass="mb-2"></p-progressSpinner>
                     <span class="loading-text">Loading market data...</span>
                   </div>
                 } @else if (stockStore.stockEntities().length === 0) {
                   <div class="empty-state">
-                    <i class="pi pi-info-circle empty-icon"></i>
+                    <i class="pi pi-info-circle text-5xl text-primary mb-3"></i>
                     <p>No market data available.</p>
-                    <p-button pButton label="Refresh Data" icon="pi pi-refresh"
-                            (onClick)="stockStore.resolveStocks()"
-                            class="p-button-sm"></p-button>
+                    <button pButton label="Refresh Data" icon="pi pi-refresh"
+                            (click)="stockStore.resolveStocks()"
+                            class="p-button-sm premium-button"></button>
                   </div>
                 } @else {
+                  <div class="market-header">
+                    <h3 class="market-title">Today's Top Performers</h3>
+                    <p-button icon="pi pi-sync" styleClass="p-button-rounded p-button-text p-button-sm refresh-button"
+                             (click)="stockStore.resolveStocks()"></p-button>
+                  </div>
                   <div class="stock-highlights">
                     @for (stock of stockStore.stockEntities().slice(0, 5); track stock.tickerSymobol) {
-                      <div class="stock-highlight-item">
-                        <div class="stock-symbol">{{ stock.tickerSymobol }}</div>
-                        <div class="stock-price">${{ stock.price | number:'1.2-2' }}</div>
-                        <div class="stock-change" [class]="stock.changePercent >= 0 ? 'text-green-600' : 'text-red-600'">
-                          {{ stock.changePercent >= 0 ? '+' : '' }}{{ stock.changePercent | number:'1.2-2' }}%
+                      <div class="stock-card">
+                        <div class="stock-header">
+                          <span class="stock-symbol">{{ stock.tickerSymobol }}</span>
+                          <span class="stock-change" [ngClass]="stock.changePercent >= 0 ? 'text-green-600' : 'text-red-600'">
+                            <i class="pi" [ngClass]="stock.changePercent >= 0 ? 'pi-arrow-up' : 'pi-arrow-down'"></i>
+                            {{ stock.changePercent >= 0 ? '+' : '' }}{{ stock.changePercent | number:'1.2-2' }}%
+                          </span>
                         </div>
+                        <div class="stock-price">${{ stock.price | number:'1.2-2' }}</div>
+                        <div class="stock-company">{{ stock.tickerSymobol || 'Company Name' }}</div>
                       </div>
                     }
                   </div>
 
-                  <p-button pButton label="Explore All Stocks" icon="pi pi-list"
-                          (onClick)="activeTabIndex = 1"
-                          class="p-button-outlined mt-3"></p-button>
+                  <button pButton label="Explore All Stocks" icon="pi pi-list"
+                          (click)="activeTabIndex = 1"
+                          class="p-button-outlined mt-3 premium-button"></button>
                 }
               </div>
             </p-panel>
           </div>
         </div>
       </p-tabPanel>
-      <!-- Stocks Tab -->
-       <!-- Stock Market Tab -->
+
+      <!-- Stock Market Tab -->
       <p-tabPanel header="Stock Market">
         <div class="stock-market-section">
-          <h2 class="section-title">Stock Market</h2>
-          <p class="section-description">
-            Explore available stocks, view their performance metrics, and make purchases to build your portfolio.
-          </p>
+          <div class="section-header">
+            <h2 class="section-title">Stock Market Explorer</h2>
+            <p class="section-description">
+              Discover, analyze, and purchase stocks to build your investment portfolio.
+            </p>
+          </div>
+
           <!-- Stock Component Integration -->
           <app-stock-component></app-stock-component>
         </div>
       </p-tabPanel>
-       <!-- Portfolio Tab -->
-       <p-tabPanel header="Portfolio">
+
+      <!-- Portfolio Tab -->
+      <p-tabPanel header="Portfolio">
         <div class="portfolio-section">
-          <h2 class="section-title">Your Portfolio</h2>
-          <p class="section-description">
-            Track the performance of your stock holdings and manage your investments.
-          </p>
+          <div class="section-header">
+            <h2 class="section-title">Your Investment Portfolio</h2>
+            <p class="section-description">
+              Track the performance of your stock holdings and manage your investments.
+            </p>
+          </div>
 
           @if (portfolioStore.isLoading()) {
             <div class="loading-state">
@@ -197,178 +243,195 @@
             </div>
           } @else if (portfolioStore.currentPortfolio() && portfolioStore.currentPortfolio().stocks.length > 0) {
             <div class="portfolio-content">
-              <p-card styleClass="mb-4">
-                <ng-template pTemplate="header">
-                  <div class="p-3 flex justify-content-between align-items-center">
-                    <h3 class="m-0">Portfolio Summary</h3>
-                    <span class="total-value">${{ portfolioStore.calculatePortfolioTotalValue() | number:'1.2-2' }}</span>
-                  </div>
-                </ng-template>
+              <div class="grid">
+                <div class="col-12 lg:col-4">
+                  <p-card styleClass="mb-4 premium-card">
+                    <ng-template pTemplate="header">
+                      <div class="p-3 flex justify-content-between align-items-center card-header">
+                        <h3 class="m-0">Portfolio Overview</h3>
+                      </div>
+                    </ng-template>
 
-                <div class="portfolio-chart-container">
-                  <p-chart type="doughnut" [data]="portfolioChartData" [options]="chartOptions" height="300px"></p-chart>
+                    <div class="portfolio-chart-container">
+                      <p-chart type="doughnut" [data]="portfolioChartData" [options]="chartOptions" height="300px"></p-chart>
+                    </div>
+
+                    <div class="portfolio-stats">
+                      <div class="stat-row">
+                        <span class="stat-label">Total Value:</span>
+                        <span class="stat-value">${{ portfolioStore.calculatePortfolioTotalValue() | number:'1.2-2' }}</span>
+                      </div>
+                      <div class="stat-row">
+                        <span class="stat-label">Cash Available:</span>
+                        <span class="stat-value">${{ portfolioStore.currentPortfolio().cash| number:'1.2-2' }}</span>
+                      </div>
+                      <div class="stat-row">
+                        <span class="stat-label">Total Stocks:</span>
+                        <span class="stat-value">{{ portfolioStore.currentPortfolio().stocks.length }}</span>
+                      </div>
+                    </div>
+
+                    <ng-template pTemplate="footer">
+                      <button pButton label="Add Stocks" icon="pi pi-plus"
+                              (click)="activeTabIndex = 1"
+                              class="p-button-outlined w-full premium-button"></button>
+                    </ng-template>
+                  </p-card>
                 </div>
 
-                <ng-template pTemplate="footer">
-                  <div class="flex justify-content-between">
-                    <span class="font-medium">Cash Available: ${{ portfolioStore.currentPortfolio().cash| number:'1.2-2' }}</span>
-                    <button pButton label="Add Stocks" icon="pi pi-plus"
-                            (onClick)="activeTabIndex = 1"
-                            class="p-button-outlined"></button>
-                  </div>
-                </ng-template>
-              </p-card>
-
-              <!-- Portfolio Holdings Table -->
-              <p-card styleClass="mt-4" header="Your Holdings">
-                <p-table [value]="portfolioStore.currentPortfolio().stocks" styleClass="p-datatable-sm" responsiveLayout="scroll">
-                  <ng-template pTemplate="header">
-                    <tr>
-                      <th>Stock</th>
-                      <th>Quantity</th>
-                      <th>Purchase Price</th>
-                      <th>Current Price</th>
-                      <th>Value</th>
-                      <th>Profit/Loss</th>
-                    </tr>
-                  </ng-template>
-                  <ng-template pTemplate="body" let-stock>
-                    <tr>
-                      <td>{{ stock.tickerSymobol }}</td>
-                      <td>{{ stock.volume || 0 }}</td>
-                      <td>${{ stock.purchasePrice | number:'1.2-2' }}</td>
-                      <td>${{ stock.price | number:'1.2-2' }}</td>
-                      <td>${{ (stock.price * (stock.volume || 0)) | number:'1.2-2' }}</td>
-                      <td [class]="(stock.price - stock.purchasePrice) >= 0 ? 'text-green-600' : 'text-red-600'">
-                        {{ (stock.price - stock.purchasePrice) >= 0 ? '+' : '' }}${{ ((stock.price - stock.purchasePrice) * (stock.volume || 0)) | number:'1.2-2' }}
-                      </td>
-                    </tr>
-                  </ng-template>
-                  <ng-template pTemplate="emptymessage">
-                    <tr>
-                      <td colspan="6" class="text-center">No portfolio data found.</td>
-                    </tr>
-                  </ng-template>
-                </p-table>
-              </p-card>
+                <div class="col-12 lg:col-8">
+                  <!-- Portfolio Holdings Table -->
+                  <p-card styleClass="premium-card" header="Your Holdings">
+                    <p-table [value]="portfolioStore.currentPortfolio().stocks"
+                           styleClass="p-datatable-sm p-datatable-striped premium-table"
+                           [tableStyle]="{'min-width': '50rem'}"
+                           responsiveLayout="scroll">
+                      <ng-template pTemplate="header">
+                        <tr>
+                          <th>Stock</th>
+                          <th>Quantity</th>
+                          <th>Purchase Price</th>
+                          <th>Current Price</th>
+                          <th>Value</th>
+                          <th>Profit/Loss</th>
+                        </tr>
+                      </ng-template>
+                      <ng-template pTemplate="body" let-stock>
+                        <tr>
+                          <td>
+                            <div class="stock-cell">
+                              <span class="stock-symbol">{{ stock.tickerSymobol }}</span>
+                              <span class="stock-company">{{ stock.company || 'Company Name' }}</span>
+                            </div>
+                          </td>
+                          <td>{{ stock.volume || 0 }}</td>
+                          <td>${{ stock.purchasePrice | number:'1.2-2' }}</td>
+                          <td>${{ stock.price | number:'1.2-2' }}</td>
+                          <td>${{ (stock.price * (stock.volume || 0)) | number:'1.2-2' }}</td>
+                          <td>
+                            <div class="profit-cell" [ngClass]="(stock.price - stock.purchasePrice) >= 0 ? 'profit-positive' : 'profit-negative'">
+                              <i class="pi" [ngClass]="(stock.price - stock.purchasePrice) >= 0 ? 'pi-arrow-up' : 'pi-arrow-down'"></i>
+                              <span>{{ (stock.price - stock.purchasePrice) >= 0 ? '+' : '' }}${{ ((stock.price - stock.purchasePrice) * (stock.volume || 0)) | number:'1.2-2' }}</span>
+                            </div>
+                          </td>
+                        </tr>
+                      </ng-template>
+                      <ng-template pTemplate="emptymessage">
+                        <tr>
+                          <td colspan="6" class="text-center">No portfolio data found.</td>
+                        </tr>
+                      </ng-template>
+                    </p-table>
+                  </p-card>
+                </div>
+              </div>
             </div>
           } @else {
             <div class="empty-portfolio">
-              <p-card styleClass="mt-4">
-                <ng-template pTemplate="header">
-                  <div class="p-3">
-                    <h3 class="m-0">No Stocks In Your Portfolio</h3>
-                  </div>
-                </ng-template>
+              <p-card styleClass="mt-4 premium-card">
                 <div class="flex flex-column align-items-center justify-content-center p-5">
-                  <i class="pi pi-shopping-cart text-6xl text-primary mb-3"></i>
+                  <i class="pi pi-shopping-cart text-6xl text-primary mb-3 animated-icon"></i>
+                  <h3 class="mb-2">Start Building Your Portfolio</h3>
                   <p class="text-center mb-3">You don't own any stocks yet. Start by exploring the stock market and making your first purchase.</p>
                   <button pButton label="Browse Stocks" icon="pi pi-search"
-                          (onClick)="activeTabIndex = 1"
-                          class="p-button-outlined"></button>
+                          (click)="activeTabIndex = 1"
+                          class="p-button-outlined premium-button"></button>
                 </div>
               </p-card>
             </div>
           }
         </div>
       </p-tabPanel>
-       <!-- Learning Tab -->
-       <p-tabPanel header="Learning">
+
+      <!-- Learning Tab -->
+      <p-tabPanel header="Learning">
         <div class="learning-section">
-          <h2 class="section-title">Learning Center</h2>
-          <p class="section-description">
-            Enhance your investment knowledge with interactive lessons and questions about stock market concepts.
-          </p>
+          <div class="section-header">
+            <h2 class="section-title">Investment Learning Center</h2>
+            <p class="section-description">
+              Enhance your investment knowledge with interactive lessons and master stock market concepts.
+            </p>
+          </div>
 
           <div class="learning-content grid">
             <div class="col-12 md:col-4">
-              <p-card styleClass="mb-4" header="Stock Market Basics">
+              <p-card styleClass="mb-4 premium-card" header="Stock Market Basics">
                 <div class="learning-module">
+                  <div class="module-image mb-3">
+                    <i class="pi pi-chart-line text-4xl module-icon"></i>
+                  </div>
                   <p>Learn the fundamentals of stock markets, how they work, and key terminology every investor should know.</p>
-                  <div class="learning-stats mt-3 mb-3">
-                    <div class="flex justify-content-between">
-                      <span>Completion</span>
-                      <span>30%</span>
-                    </div>
-                    <p-progressBar [value]="30" [showValue]="false" styleClass="mt-2" [style]="{'height': '6px'}"></p-progressBar>
-                  </div>
-                  <button pButton label="Start Learning" icon="pi pi-book" class="p-button-success mt-3"></button>
+                  <p-button pButton label="Start Learning" icon="pi pi-book" class="p-button-success mt-3 w-full" />
                 </div>
               </p-card>
             </div>
 
             <div class="col-12 md:col-4">
-              <p-card styleClass="mb-4" header="Investment Strategies">
+              <p-card styleClass="mb-4 premium-card" header="Investment Strategies">
                 <div class="learning-module">
+                  <div class="module-image mb-3">
+                    <i class="pi pi-sitemap text-4xl module-icon"></i>
+                  </div>
                   <p>Discover different approaches to stock investing and building a balanced portfolio for long-term growth.</p>
-                  <div class="learning-stats mt-3 mb-3">
-                    <div class="flex justify-content-between">
-                      <span>Completion</span>
-                      <span>15%</span>
-                    </div>
-                    <p-progressBar [value]="15" [showValue]="false" styleClass="mt-2" [style]="{'height': '6px'}"></p-progressBar>
-                  </div>
-                  <button pButton label="Start Learning" icon="pi pi-book" class="p-button-success mt-3"></button>
+                  <p-button pButton label="Start Learning" icon="pi pi-book" class="p-button-success mt-3 w-full premium-button"></p-button>
                 </div>
               </p-card>
             </div>
 
             <div class="col-12 md:col-4">
-              <p-card styleClass="mb-4" header="Risk Management">
+              <p-card styleClass="mb-4 premium-card" header="Random Stock Questions">
                 <div class="learning-module">
-                  <p>Understand how to assess and manage investment risks for better returns and safer portfolio growth.</p>
-                  <div class="learning-stats mt-3 mb-3">
-                    <div class="flex justify-content-between">
-                      <span>Completion</span>
-                      <span>5%</span>
-                    </div>
-                    <p-progressBar [value]="5" [showValue]="false" styleClass="mt-2" [style]="{'height': '6px'}"></p-progressBar>
+                  <div class="module-image mb-3">
+                    <i class="pi pi-shield text-4xl module-icon"></i>
                   </div>
-                  <button pButton label="Start Learning" icon="pi pi-book" class="p-button-success mt-3"></button>
+                  <p>Understand how to assess and manage investment risks for better returns and safer portfolio growth.</p>
+                  <p-button pButton label="Start Learning" icon="pi pi-book" class="p-button-success mt-3 w-full premium-button"></p-button>
                 </div>
               </p-card>
             </div>
 
             <!-- Practice Area -->
             <div class="col-12 mt-3">
-              <p-card styleClass="practice-area">
+              <p-card styleClass="practice-area premium-card">
                 <ng-template pTemplate="header">
-                  <div class="p-3">
-                    <h3 class="m-0">Practice Area</h3>
+                  <div class="p-3 card-header">
+                    <h3 class="m-0">Knowledge Testing Area</h3>
                   </div>
                 </ng-template>
 
                 <div class="flex justify-content-center flex-column align-items-center p-4">
-                  <i class="pi pi-question-circle text-4xl text-primary mb-3"></i>
+                  <i class="pi pi-question-circle text-5xl text-primary mb-3 pulse-animation"></i>
                   <h3>Test Your Knowledge</h3>
                   <p class="mb-4 text-center">Challenge yourself with random stock market questions to improve your understanding.</p>
                   <button pButton label="Get Random Question" icon="pi pi-sync"
-                          (onClick)="tutorStore.getRandomQuestion()"
-                          class="p-button-outlined"></button>
+                          (click)="tutorStore.getRandomQuestion()"
+                          class="p-button-outlined premium-button"></button>
 
                   @if (tutorStore.currentTutorQuestion()) {
-                    <div class="question-container mt-4 p-4 surface-ground border-round w-full">
-                      <h4 class="mb-3">{{ tutorStore.currentTutorQuestion().question }}</h4>
+                    <div class="question-container mt-4 p-4 surface-ground border-round w-full fade-in">
+                      <h4 class="mb-3 question-text">{{ tutorStore.currentTutorQuestion().question }}</h4>
 
-                      <div class="answers">
-                        @for (answer of tutorStore.currentTutorQuestion().answers; track answer.option) {
-                          <div class="field-radiobutton mb-2">
-                            <p-radioButton [id]="answer.option"
-                                         name="practiceAnswer"
-                                         [id]="answer.option"
-\                                        [(ngModel)]="selectedAnswer">
-                            </p-radioButton>
-                            <label [for]="answer.option" class="ml-2">{{ answer.option }}</label>
-                          </div>
-                        }
-                      </div>
+                      <form class="answer-form">
+                        <div class="answers">
+                          @for (answer of tutorStore.currentTutorQuestion().answers; track answer.option) {
+                            <div class="field-radiobutton mb-2 answer-option">
+                              <p-radioButton [inputId]="answer.option"
+                                          name="practiceAnswer"
+                                          [value]="answer.option"
+                                          [(ngModel)]="selectedAnswer">
+                              </p-radioButton>
+                              <label [for]="answer.option" class="ml-2">{{ answer.option }}</label>
+                            </div>
+                          }
+                        </div>
 
-                      <div class="flex justify-content-end mt-4">
-                        <button pButton label="Submit Answer" icon="pi pi-check"
-                                [disabled]="!selectedAnswer"
-                                (onClick)="submitAnswer(selectedAnswer)"
-                                class="p-button-success"></button>
-                      </div>
+                        <div class="flex justify-content-end mt-4">
+                          <button pButton type="button" label="Submit Answer" icon="pi pi-check"
+                                  [disabled]="!selectedAnswer"
+                                  (click)="submitAnswer(selectedAnswer)"
+                                  class="p-button-success premium-button"></button>
+                        </div>
+                      </form>
                     </div>
                   }
                 </div>
@@ -376,7 +439,29 @@
             </div>
           </div>
         </div>
-       </p-tabPanel>
+      </p-tabPanel>
     </p-tabView>
   </main>
+
+  <footer class="app-footer">
+    <div class="footer-content">
+      <div class="footer-logo">
+        <i class="pi pi-chart-line"></i>
+        <span>{{ title }}</span>
+      </div>
+      <div class="footer-links">
+        <a href="#">About</a>
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="#">Help</a>
+      </div>
+      <div class="copyright">© 2024 Stock Learning Platform. All rights reserved.</div>
+    </div>
+  </footer>
+
+  <!-- History Component (This was missing) -->
+  <app-history-component></app-history-component>
+
+  <!-- Toast Messages for notifications -->
+  <p-toast position="bottom-right"></p-toast>
 </div>

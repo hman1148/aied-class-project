@@ -1,5 +1,4 @@
 import { Component, inject, OnInit, ViewChild } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
 import { MenubarModule } from 'primeng/menubar';
@@ -22,14 +21,15 @@ import { PortfolioStore, TutorStore } from '../../stores';
 import { TableModule } from 'primeng/table';
 import { CommonModule } from '@angular/common';
 import { patchState } from '@ngrx/signals';
+import { RadioButtonModule } from 'primeng/radiobutton';
 
 @Component({
   selector: 'app-root',
+  standalone: true,
   imports: [
     CommonModule,
-    RouterOutlet,
-    RouterOutlet,
     HistoryComponent,
+    RadioButtonModule,
     StockComponent,
     FormsModule,
     MenubarModule,

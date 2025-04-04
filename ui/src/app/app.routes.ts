@@ -6,7 +6,6 @@ import { stockResolver } from '../app.resolver';
 export const routes: Routes = [
   {
     path: '',
-    component: AppComponent,
     resolve: {
       tutorHistory: historyResolver,
       stocks: stockResolver,

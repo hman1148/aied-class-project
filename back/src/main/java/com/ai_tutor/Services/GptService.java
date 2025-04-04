@@ -6,6 +6,7 @@ import com.ai_tutor.Models.TutorQuestion;
 import com.ai_tutor.Utilities.PromptTemplates;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -18,14 +19,14 @@ import org.springframework.web.client.RestTemplate;
 public class GptService {
 
     private static final String OPEN_AI_URL = "https://api.openai.com/v1/chat/completions";
-
-    @Value("${openai.api.key}")
     private final String apiKey;
 
     private final RestTemplate restTemplate;
 
-    public GptService(String apiKey) {
-        this.apiKey = apiKey;
+    public GptService() {
+        Dotenv dotenv = Dotenv.load();
+
+        this.apiKey = dotenv.get("OPENAI_API_KEY");
         restTemplate = new RestTemplate();
     }
 

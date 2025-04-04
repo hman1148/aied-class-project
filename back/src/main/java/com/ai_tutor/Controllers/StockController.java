@@ -35,12 +35,7 @@ public class StockController {
     public ResponseEntity<ItemsResponse<Stock>> getAllStocks() {
         List<Stock> stocks = this.stockService.getStocks();
 
-        try {
-            Thread.sleep(150000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        ItemsResponse<Stock> response = new ItemsResponse<>(stocks, "Stock data retrieved", true);
+        ItemsResponse<Stock> response = new ItemsResponse<>(stocks, "Stocks retrieved successfully", true);
         return ResponseEntity.ok(response);
     }
 

@@ -1,12 +1,10 @@
 services:
-  app:
+  aied-stock-tutor:
     image: 'aied-stock-tutor'
     build:
       context: .
       dockerfile: Dockerfile
     ports:
       - '8080:8080'
-    volumes:
-      - ./env:/app/.env
     env_file:
       - .env

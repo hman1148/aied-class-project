@@ -13,14 +13,12 @@ export class PortfolioService {
   readonly http = inject(HttpClient);
 
   getPortfolioSummary(): Observable<ItemResponse<PortfolioSummary>> {
-    const url =
-      this.env.apiUrl() + '/' + Apis.Portfolio + '/' + Page.PortfolioSummary;
+    const url = this.env.apiUrl() + Apis.Portfolio + Page.PortfolioSummary;
     return this.http.get<ItemResponse<PortfolioSummary>>(url);
   }
 
   resetPortfolio(): Observable<ItemResponse<string>> {
-    const url =
-      this.env.apiUrl() + '/' + Apis.Portfolio + '/' + Page.ResetHistory;
+    const url = this.env.apiUrl() + Apis.Portfolio + Page.ResetHistory;
     return this.http.get<ItemResponse<string>>(url);
   }
 }

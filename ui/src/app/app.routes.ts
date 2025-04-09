@@ -1,7 +1,9 @@
 import { Routes } from '@angular/router';
 import { historyResolver } from './sub-components/history-component/history-component/history.resolver';
-import { stockResolver } from '../app.resolver';
+import { portfolioResolver, stockResolver } from '../app.resolver';
 import { AppComponent } from './app.component';
+import { PortfolioStore } from '../../stores';
+import { inject } from '@angular/core';
 
 export const routes: Routes = [
   {
@@ -10,6 +12,7 @@ export const routes: Routes = [
     resolve: {
       tutorHistory: historyResolver,
       stocks: stockResolver,
+      portfolio: portfolioResolver,
     },
   },
 ];

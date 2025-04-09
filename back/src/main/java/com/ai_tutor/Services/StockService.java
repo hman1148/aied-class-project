@@ -17,7 +17,7 @@ import java.util.List;
 public class StockService {
 
     private final String API_KEY;
-    private static final String BASE_URL = "https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=%s&apikey=%s";
+    private static final String BASE_URL = "https://www.alphavantage.co/query?function=BATCH_STOCK_QUOTES&symbols=%s&apikey=%s";
 
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
@@ -31,38 +31,45 @@ public class StockService {
         this.stocks = new ArrayList<>();
     }
 
-    public boolean updateStockFromAPI(Stock stock) {
-        String url = String.format(BASE_URL, stock.getTickerSymbol(), API_KEY);
+    public boolean updateStocksFromAPI(List<Stock> stockList) {
+        // Prepare the list of tickers for the bulk request
+        String tickers = String.join(",", stockList.stream().map(Stock::getTickerSymbol).toArray(String[]::new));
+        String url = String.format(BASE_URL, tickers, API_KEY);
 
         try {
+            // Send the bulk request to Alpha Vantage
             String jsonResponse = restTemplate.getForObject(url, String.class);
             JsonNode rootNode = objectMapper.readTree(jsonResponse);
-            JsonNode quoteNode = rootNode.path("Global Quote");
+            JsonNode quoteArray = rootNode.path("stockQuotes");
 
-            if (quoteNode.isMissingNode() || quoteNode.isEmpty()) {
-                System.out.println("No quote data found for: " + stock.getTickerSymbol());
-                return false;
+            if (quoteArray.isArray()) {
+                for (JsonNode quoteNode : quoteArray) {
+                    String ticker = quoteNode.path("1. symbol").asText();
+                    Stock stock = stockList.stream().filter(s -> s.getTickerSymbol().equals(ticker)).findFirst().orElse(null);
+
+                    if (stock != null) {
+                        double open = this.getDouble(quoteNode, "2. price");
+                        double high = this.getDouble(quoteNode, "3. high");
+                        double low = this.getDouble(quoteNode, "4. low");
+                        double price = this.getDouble(quoteNode, "5. price");
+                        double previousClose = this.getDouble(quoteNode, "8. previous close");
+                        double change = this.getDouble(quoteNode, "9. change");
+                        double changePercent = this.parsePercentage(quoteNode.get("10. change percent").asText());
+                        long volume = this.getLong(quoteNode, "6. volume");
+
+                        stock.updateQuoteData(open, high, low, price, previousClose, change, changePercent, volume);
+                    }
+                }
+                return true;
             }
 
-            double open = this.getDouble(quoteNode, "02. open");
-            double high = this.getDouble(quoteNode, "03. high");
-            double low = this.getDouble(quoteNode, "04. low");
-            double price = this.getDouble(quoteNode, "05. price");
-            double previousClose = this.getDouble(quoteNode, "08. previous close");
-            double change = this.getDouble(quoteNode, "09. change");
-            double changePercent = this.parsePercentage(quoteNode.get("10. change percent").asText());
-            long volume = this.getLong(quoteNode, "06. volume");
-
-
-            stock.updateQuoteData(open, high, low, price, previousClose, change, changePercent, volume);
-            return true;
+            return false;
 
         } catch (Exception ex) {
-            System.err.println("Error getting response for " + stock.getTickerSymbol());
+            System.err.println("Error getting response for stock batch.");
             ex.printStackTrace();
             return false;
         }
-
     }
 
     public List<String> loadTickersFromFile() {
@@ -79,16 +86,21 @@ public class StockService {
     public ArrayList<Stock> getStocks() {
         List<String> tickers = this.loadTickersFromFile();
 
+        // Create a list of stock objects
+        List<Stock> stockList = new ArrayList<>();
         for (String ticker : tickers) {
-            Stock stock = new Stock(ticker, 0, 0, ticker);
-            boolean success = this.updateStockFromAPI(stock);
-
-            if (success) {
-                this.stocks.add(stock);
-            } else {
-                System.out.println("Failed to update stock data for: " + ticker);
-            }
+            stockList.add(new Stock(ticker, 0, 0, ticker));
         }
+
+        // Fetch stock data in bulk
+        boolean success = this.updateStocksFromAPI(stockList);
+
+        if (success) {
+            this.stocks.addAll(stockList);
+        } else {
+            System.out.println("Failed to update stock data.");
+        }
+
         return this.stocks;
     }
 

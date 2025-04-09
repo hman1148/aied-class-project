@@ -18,7 +18,6 @@ import { TableModule } from 'primeng/table';
 import { initialStockComponentState } from '../stock-component.state';
 import { StockStore } from '../../../../../stores/stocks/stock.store';
 import { TutorStore } from '../../../../../stores/tutor/tutor.store';
-import { Stock } from '../../../../../models';
 
 @Component({
   selector: 'app-stock-component',

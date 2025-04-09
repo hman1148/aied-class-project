@@ -1,7 +1,8 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { EnvironmentStore } from '../../stores';
 import { Observable } from 'rxjs';
+
+import { EnvironmentStore } from '../../stores';
 import {
   Apis,
   CorrectAnswer,
@@ -19,33 +20,32 @@ export class TutorService {
   readonly http = inject(HttpClient);
 
   getQuestion(): Observable<ItemResponse<TutorQuestion>> {
-    const url = this.env.apiUrl() + Apis.Tutor + '/' + Page.Question;
+    const url = this.env.apiUrl() + Apis.Tutor + Page.Question;
     return this.http.get<ItemResponse<TutorQuestion>>(url);
   }
 
   getStockQuestion(ticker: string): Observable<ItemResponse<TutorQuestion>> {
-    const url =
-      this.env.apiUrl() + Apis.Tutor + '/' + Page.Question + '/' + ticker;
+    const url = this.env.apiUrl() + Apis.Tutor + Page.Question + ticker;
     return this.http.get<ItemResponse<TutorQuestion>>(url);
   }
 
   getRandomQuestion(): Observable<ItemResponse<TutorQuestion>> {
-    const url = this.env.apiUrl() + Apis.Tutor + '/' + Page.RandomQuestion;
+    const url = this.env.apiUrl() + Apis.Tutor + Page.RandomQuestion;
     return this.http.get<ItemResponse<TutorQuestion>>(url);
   }
 
   getAnswer(selectedQuestion: string): Observable<ItemResponse<CorrectAnswer>> {
-    const url = this.env.apiUrl() + Apis.Tutor + '/' + Page.Answer;
+    const url = this.env.apiUrl() + Apis.Tutor + Page.Answer;
     return this.http.post<ItemResponse<CorrectAnswer>>(url, selectedQuestion);
   }
 
   getHistory(): Observable<ItemsResponse<TutorQuestion>> {
-    const url = this.env.apiUrl() + Apis.Tutor + '/' + Page.History;
+    const url = this.env.apiUrl() + Apis.Tutor + Page.History;
     return this.http.get<ItemsResponse<TutorQuestion>>(url);
   }
 
   resetHistory(): Observable<ItemResponse<string>> {
-    const url = this.env.apiUrl() + Apis.Tutor + '/' + Page.ResetHistory;
+    const url = this.env.apiUrl() + Apis.Tutor + Page.ResetHistory;
     return this.http.delete<ItemResponse<string>>(url);
   }
 }

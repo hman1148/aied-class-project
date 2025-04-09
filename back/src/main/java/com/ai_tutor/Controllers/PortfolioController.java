@@ -11,7 +11,6 @@ import java.util.HashMap;
 
 @RestController
 @RequestMapping("/portfolio")
-@CrossOrigin(origins = "*") // Allow CORS for testing from angular
 public class PortfolioController {
     @Autowired
     private final PortfolioService portfolioService;

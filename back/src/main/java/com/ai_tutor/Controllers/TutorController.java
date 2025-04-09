@@ -19,7 +19,6 @@ import java.util.HashMap;
 
 @RestController
 @RequestMapping("/tutor")
-@CrossOrigin(origins = "*") // Allow CORS for testing from angular
 public class TutorController {
 
     @Autowired

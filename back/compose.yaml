@@ -5,6 +5,14 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - '8080:8080'
+      - '8000:8080'
     env_file:
       - .env
+    environment:
+      - CORS_ALLOWED_ORIGINS=http://localhost:4200
+    networks:
+      - tutor-network
+
+networks:
+  tutor-network:
+    driver: bridge

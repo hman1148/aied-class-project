@@ -1,6 +1,6 @@
 import { inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { withEntities } from '@ngrx/signals/entities';
+import { updateAllEntities, withEntities } from '@ngrx/signals/entities';
 import {
   patchState,
   signalStore,
@@ -10,7 +10,7 @@ import {
 } from '@ngrx/signals';
 
 import { initialPortfolioStoreState } from './portfolio.state';
-import { Portfolio } from '../../models';
+import { CorrectAnswer, Portfolio } from '../../models';
 import { PortfolioService } from '../../services/portfolio/portfolio.service';
 
 const collection = 'portfolio';
@@ -79,5 +79,14 @@ export const PortfolioStore = signalStore(
 
       return totalValue;
     },
+
+    updatePortfolio: (correctAnswer: CorrectAnswer) => {
+      patchState(store, {
+        currentPortfolio: {
+          ...store.currentPortfolio(),
+          cash: correctAnswer.newPortfolioBalance,
+        }
+      })
+    }
   }))
 );

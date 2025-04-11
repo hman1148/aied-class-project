@@ -171,21 +171,21 @@
           <div class="flex flex-column align-items-center justify-content-center p-4">
             <i class="pi pi-exclamation-circle text-3xl text-yellow-500 mb-2"></i>
             <span class="text-center">Failed to load question. Please try again.</span>
-            <button pButton label="Reload Question" icon="pi pi-refresh"
+            <p-button pButton label="Reload Question" icon="pi pi-refresh"
                     (click)="loadTutorQuestion()"
-                    class="p-button-outlined mt-3"></button>
+                    class="p-button-outlined mt-3"></p-button>
           </div>
         }
       </div>
 
       <!-- Dialog Footer -->
       <div class="dialog-footer flex justify-content-between mt-4">
-        <button pButton label="Cancel" icon="pi pi-times" class="p-button-outlined"
-                (click)="onCancelPurchase()"></button>
+        <p-button pButton label="Cancel" icon="pi pi-times" class="p-button-outlined"
+                (click)="onCancelPurchase()"></p-button>
 
-        <button pButton label="Submit Answer & Purchase" icon="pi pi-check" class="p-button-success"
+        <p-button pButton label="Submit Answer & Purchase" icon="pi pi-check" class="p-button-success"
                 [disabled]="!state().selectedAnswer || tutorStore.isLoading()"
-                (click)="tutorStore.submitAnswer()"></button>
+                (onClick)="submit()"></p-button>
       </div>
     }
   </div>

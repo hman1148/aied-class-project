@@ -19,7 +19,8 @@ import { initialStockComponentState } from '../stock-component.state';
 import { StockStore } from '../../../../../stores/stocks/stock.store';
 import { TutorStore } from '../../../../../stores/tutor/tutor.store';
 import { Stock } from '../../../../../models';
-import { PortfolioStore } from '../../../../../stores';
+import { HistoryStore, PortfolioStore } from '../../../../../stores';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-stock-component',
@@ -45,6 +46,8 @@ export class StockComponent {
   readonly stockStore = inject(StockStore);
   readonly tutorStore = inject(TutorStore);
   readonly portfolioStore = inject(PortfolioStore);
+  readonly historyStore = inject(HistoryStore);
+  readonly messageService = inject(MessageService);
 
   onRowSelect(event: any): void {
     const selectedStock: Stock = event.data;
@@ -66,8 +69,32 @@ export class StockComponent {
     this.loadTutorQuestion();
   }
 
-  submit(): void {
-    this.tutorStore.submitAnswer();
+  async submit(): Promise<void> {
+    if (!this.state.selectedAnswer()) return;
+
+    await this.tutorStore.submitAnswer();
+    this.portfolioStore.updatePortfolio(this.tutorStore.currentCorrecAnswer());
+
+    const isCorrect = this.tutorStore.currentCorrecAnswer().isCorrect;
+    const explaination = this.tutorStore.currentCorrecAnswer().explanation;
+
+    if (isCorrect) {
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Success',
+        detail: explaination,
+        life: 5000,
+      });
+    } else {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: explaination,
+        life: 5000,
+      });
+    }
+
+    this.historyStore.updateHistory(this.tutorStore.currentTutorQuestion());
   }
 
   /**

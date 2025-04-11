@@ -6,7 +6,11 @@ import {
   withMethods,
   withState,
 } from '@ngrx/signals';
-import { setAllEntities, withEntities } from '@ngrx/signals/entities';
+import {
+  addEntity,
+  setAllEntities,
+  withEntities,
+} from '@ngrx/signals/entities';
 import { inject } from '@angular/core';
 import { TutorService } from '../../services/tutor/tutor.service';
 import { initialHistoryStoreState } from './history-store.state';
@@ -62,6 +66,16 @@ export const HistoryStore = signalStore(
         });
 
         patchState(store, { selectedTutorQuestion: tutorQuestion });
+      },
+
+      updateHistory: (tutorQuestion: TutorQuestion) => {
+        patchState(
+          store,
+          addEntity(tutorQuestion, {
+            collection: collection,
+            selectId: (tutor: TutorQuestion) => tutor.question,
+          })
+        );
       },
     })
   )

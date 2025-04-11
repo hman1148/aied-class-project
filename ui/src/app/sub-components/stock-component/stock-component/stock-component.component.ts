@@ -1,6 +1,6 @@
 import { patchState, signalState } from '@ngrx/signals';
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 // PrimeNG Components
@@ -18,6 +18,8 @@ import { TableModule } from 'primeng/table';
 import { initialStockComponentState } from '../stock-component.state';
 import { StockStore } from '../../../../../stores/stocks/stock.store';
 import { TutorStore } from '../../../../../stores/tutor/tutor.store';
+import { Stock } from '../../../../../models';
+import { PortfolioStore } from '../../../../../stores';
 
 @Component({
   selector: 'app-stock-component',
@@ -42,10 +44,12 @@ export class StockComponent {
   readonly state = signalState(initialStockComponentState());
   readonly stockStore = inject(StockStore);
   readonly tutorStore = inject(TutorStore);
+  readonly portfolioStore = inject(PortfolioStore);
 
   onRowSelect(event: any): void {
-    const selectedStock = event.data;
-    this.stockStore.resolveStock(selectedStock.tickerSymobol);
+    const selectedStock: Stock = event.data;
+    console.log(selectedStock);
+    this.stockStore.resolveStock(selectedStock.tickerSymbol);
     patchState(this.state, { quantity: 1 });
   }
 
@@ -62,13 +66,17 @@ export class StockComponent {
     this.loadTutorQuestion();
   }
 
+  submit(): void {
+    this.tutorStore.submitAnswer();
+  }
+
   /**
    * Load tutor question for current stock
    */
   loadTutorQuestion(): void {
     if (!this.stockStore.currentStock()) return;
 
-    const ticker: string = this.stockStore.currentStock().tickerSymobol;
+    const ticker: string = this.stockStore.currentStock().tickerSymbol;
     this.tutorStore.getStockQuestion(ticker);
   }
 

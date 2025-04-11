@@ -1,12 +1,10 @@
 package com.ai_tutor.Services;
 
 import com.ai_tutor.Models.Stock;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.cdimascio.dotenv.Dotenv;
+import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -16,112 +14,81 @@ import java.util.List;
 @Service
 public class StockService {
 
-    private final String API_KEY;
-    private static final String BASE_URL = "https://www.alphavantage.co/query?function=BATCH_STOCK_QUOTES&symbols=%s&apikey=%s";
-
-    private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
-    private ArrayList<Stock> stocks;
+    private final ArrayList<Stock> stocks;
+    private boolean stocksLoaded = false;
 
     public StockService() {
-        Dotenv dotenv = Dotenv.load();
-        this.API_KEY = dotenv.get("ALPHAVANTAGE_API_KEY");
-        this.restTemplate = new RestTemplate();
         this.objectMapper = new ObjectMapper();
         this.stocks = new ArrayList<>();
     }
 
-    public boolean updateStocksFromAPI(List<Stock> stockList) {
-        // Prepare the list of tickers for the bulk request
-        String tickers = String.join(",", stockList.stream().map(Stock::getTickerSymbol).toArray(String[]::new));
-        String url = String.format(BASE_URL, tickers, API_KEY);
-
-        try {
-            // Send the bulk request to Alpha Vantage
-            String jsonResponse = restTemplate.getForObject(url, String.class);
-            JsonNode rootNode = objectMapper.readTree(jsonResponse);
-            JsonNode quoteArray = rootNode.path("stockQuotes");
-
-            if (quoteArray.isArray()) {
-                for (JsonNode quoteNode : quoteArray) {
-                    String ticker = quoteNode.path("1. symbol").asText();
-                    Stock stock = stockList.stream().filter(s -> s.getTickerSymbol().equals(ticker)).findFirst().orElse(null);
-
-                    if (stock != null) {
-                        double open = this.getDouble(quoteNode, "2. price");
-                        double high = this.getDouble(quoteNode, "3. high");
-                        double low = this.getDouble(quoteNode, "4. low");
-                        double price = this.getDouble(quoteNode, "5. price");
-                        double previousClose = this.getDouble(quoteNode, "8. previous close");
-                        double change = this.getDouble(quoteNode, "9. change");
-                        double changePercent = this.parsePercentage(quoteNode.get("10. change percent").asText());
-                        long volume = this.getLong(quoteNode, "6. volume");
-
-                        stock.updateQuoteData(open, high, low, price, previousClose, change, changePercent, volume);
-                    }
-                }
-                return true;
-            }
-
-            return false;
-
-        } catch (Exception ex) {
-            System.err.println("Error getting response for stock batch.");
-            ex.printStackTrace();
-            return false;
-        }
+    @PostConstruct
+    public void init() {
+        System.out.println("Initializing StockService...");
+        getStocks();  // This will trigger loading if not already loaded
+        System.out.println("Loaded " + stocks.size() + " stocks from file");
     }
 
-    public List<String> loadTickersFromFile() {
+    public List<Stock> loadStocksFromFile() {
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("top_50_tickers.json")) {
             if (inputStream == null) {
-                throw new RuntimeException("top_50_tickers not found");
+                throw new RuntimeException("top_50_tickers.json not found");
             }
-            return this.objectMapper.readValue(inputStream, new TypeReference<List<String>>() {});
+
+            JsonNode rootNode = objectMapper.readTree(inputStream);
+            JsonNode stocksNode = rootNode.path("stocks");
+
+            List<Stock> stockList = new ArrayList<>();
+
+            for (JsonNode stockNode : stocksNode) {
+                String tickerSymbol = stockNode.path("tickerSymbol").asText();
+                double open = stockNode.path("open").asDouble();
+                double high = stockNode.path("high").asDouble();
+                double low = stockNode.path("low").asDouble();
+                double price = stockNode.path("price").asDouble();
+                double previousClose = stockNode.path("previousClose").asDouble();
+                double change = stockNode.path("change").asDouble();
+                double changePercent = stockNode.path("changePercent").asDouble();
+                long volume = stockNode.path("volume").asLong();
+                String lastUpdatedStr = stockNode.path("lastUpdated").asText();
+
+                // Create a Stock object with PRICE already set
+                Stock stock = new Stock(
+                        tickerSymbol, 0, 0, tickerSymbol,
+                        open, high, low, price,
+                        previousClose, change, changePercent,
+                        volume, lastUpdatedStr
+                );
+                stockList.add(stock);
+            }
+
+            return stockList;
+
         } catch (Exception ex) {
-            throw new RuntimeException("Failed to load ticker list.", ex);
+            throw new RuntimeException("Failed to load stock data from file: " + ex.getMessage(), ex);
         }
     }
 
+
     public ArrayList<Stock> getStocks() {
-        List<String> tickers = this.loadTickersFromFile();
-
-        // Create a list of stock objects
-        List<Stock> stockList = new ArrayList<>();
-        for (String ticker : tickers) {
-            stockList.add(new Stock(ticker, 0, 0, ticker));
+        // Load stocks only once
+        if (!stocksLoaded) {
+            List<Stock> stockList = loadStocksFromFile();
+            stocks.clear(); // Clear any existing data first
+            stocks.addAll(stockList);
+            stocksLoaded = true;
         }
-
-        // Fetch stock data in bulk
-        boolean success = this.updateStocksFromAPI(stockList);
-
-        if (success) {
-            this.stocks.addAll(stockList);
-        } else {
-            System.out.println("Failed to update stock data.");
-        }
-
-        return this.stocks;
+        return stocks;
     }
 
     public HashMap<String, Stock> getStocksMap() {
         HashMap<String, Stock> stockMap = new HashMap<>();
-        for (Stock stock : this.stocks) {
+        for (Stock stock : getStocks()) {
             stockMap.put(stock.getTickerSymbol(), stock);
         }
         return stockMap;
     }
 
-    private double getDouble(JsonNode node, String field) {
-        return node.has(field) ? Double.parseDouble(node.get(field).asText()) : 0;
-    }
 
-    private long getLong(JsonNode node, String field) {
-        return node.has(field) ? Long.parseLong(node.get(field).asText()) : 0;
-    }
-
-    private double parsePercentage(String percentText) {
-        if (percentText == null || percentText.isEmpty()) return 0.0;
-        return Double.parseDouble(percentText.replace("%", ""));
-    }
 }

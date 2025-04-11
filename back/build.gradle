@@ -32,6 +32,11 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
+
+tasks.named('bootRun') {
+	main = 'com.ai_tutor.AiInvestmentTutorApplication'
+}
+
 tasks.named('test') {
 	useJUnitPlatform()
 }

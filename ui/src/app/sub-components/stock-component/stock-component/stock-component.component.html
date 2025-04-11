@@ -1,12 +1,10 @@
 <div class="stock-component-container">
-  <!-- Loading State -->
   @if (stockStore.isLoading()) {
     <div class="flex flex-column align-items-center justify-content-center py-5">
       <p-progressSpinner styleClass="mb-3"></p-progressSpinner>
       <span class="text-secondary">Loading stocks...</span>
     </div>
   } @else {
-    <!-- Stock Data Table -->
     <p-table [value]="stockStore.stockEntities()"
              [tableStyle]="{'min-width': '60rem'}"
              [paginator]="stockStore.stockEntities().length > 10"
@@ -26,9 +24,9 @@
       </ng-template>
       <ng-template pTemplate="header">
         <tr>
-          <th pSortableColumn="tickerSymobol">Symbol <p-sortIcon field="tickerSymobol"></p-sortIcon></th>
+          <th pSortableColumn="tickerSymbol">Symbol <p-sortIcon field="tickerSymbol"></p-sortIcon></th>
           <th pSortableColumn="price">Price <p-sortIcon field="price"></p-sortIcon></th>
-          <th pSortableColumn="percentChange">Change <p-sortIcon field="percentChange"></p-sortIcon></th>
+          <th pSortableColumn="changePercent">Change <p-sortIcon field="changePercent"></p-sortIcon></th>
           <th pSortableColumn="volume">Volume <p-sortIcon field="volume"></p-sortIcon></th>
           <th pSortableColumn="open">Open <p-sortIcon field="open"></p-sortIcon></th>
           <th pSortableColumn="high">High <p-sortIcon field="high"></p-sortIcon></th>
@@ -37,10 +35,10 @@
       </ng-template>
       <ng-template pTemplate="body" let-stock>
         <tr [pSelectableRow]="stock">
-          <td class="font-medium">{{ stock.tickerSymobol }}</td>
+          <td class="font-medium">{{ stock.tickerSymbol }}</td>
           <td>${{ stock.price | number:'1.2-2' }}</td>
-          <td [class]="stock.percentChange >= 0 ? 'text-green-600' : 'text-red-600'">
-            {{ stock.percentChange >= 0 ? '+' : '' }}{{ stock.percentChange | number:'1.2-2' }}%
+          <td [class]="stock.changePercent >= 0 ? 'text-green-600' : 'text-red-600'">
+            {{ stock.changePercent >= 0 ? '+' : '' }}{{ stock.changePercent | number:'1.2-2' }}%
           </td>
           <td>{{ stock.volume | number }}</td>
           <td>${{ stock.open | number:'1.2-2' }}</td>
@@ -60,60 +58,58 @@
       </ng-template>
     </p-table>
 
-    <!-- Purchase Panel -->
-    @if (stockStore.currentStock()) {
-      <div class="purchase-panel p-card p-4 mt-4">
-        <div class="grid">
-          <div class="col-12 md:col-7">
-            <div class="flex flex-column md:flex-row md:align-items-center">
-              <h3 class="m-0 mb-2 md:mb-0 md:mr-3">Selected:
-                <span class="text-primary font-medium">{{ stockStore.currentStock().tickerSymobol }}</span>
-              </h3>
-              <div class="purchase-details">
-                <div class="price-display">Current Price:
-                  <span class="font-medium">${{ stockStore.currentStock().price | number:'1.2-2' }}</span>
-                </div>
-                <div>Daily Change:
-                  <span [class]="stockStore.currentStock().changePercent >= 0 ? 'text-green-600' : 'text-red-600'">
-                    {{ stockStore.currentStock().changePercent >= 0 ? '+' : '' }}{{ stockStore.currentStock().changePercent | number:'1.2-2' }}%
-                  </span>
+      @if (stockStore.currentStock().tickerSymbol != '') {
+        <div class="purchase-panel p-card p-4 mt-4 fade-in">
+          <div class="grid">
+            <div class="col-12 md:col-7">
+              <div class="flex flex-column md:flex-row md:align-items-center">
+                <h3 class="m-0 mb-2 md:mb-0 md:mr-3">Selected:
+                  <span class="text-primary font-medium">{{ stockStore.currentStock().tickerSymbol }}</span>
+                </h3>
+                <div class="purchase-details">
+                  <div class="price-display">Current Price:
+                    <span class="font-medium">${{ stockStore.currentStock().price | number:'1.2-2' }}</span>
+                  </div>
+                  <div>Daily Change:
+                    <span [class]="stockStore.currentStock().changePercent >= 0 ? 'text-green-600' : 'text-red-600'">
+                      {{ stockStore.currentStock().changePercent >= 0 ? '+' : '' }}{{ stockStore.currentStock().changePercent | number:'1.2-2' }}%
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <div class="col-12 md:col-5">
-            <form class="p-fluid flex flex-column md:flex-row align-items-center gap-3">
-              <div class="quantity-field flex-auto">
-                <label for="quantity" class="block mb-1">Quantity</label>
-                <p-inputNumber id="quantity"
-                              [(ngModel)]="state().quantity"
-                              [ngModelOptions]="{standalone: true}"
-                              [showButtons]="true"
-                              [min]="1"
-                              buttonLayout="horizontal"
-                              inputId="horizontal"
-                              decrementButtonClass="p-button-secondary"
-                              incrementButtonClass="p-button-secondary">
-                </p-inputNumber>
-              </div>
-              <div class="flex-auto mt-3 md:mt-4">
-                <button pButton
-                        label="Purchase Stock"
-                        icon="pi pi-shopping-cart"
-                        class="p-button-success"
-                        [disabled]="state().quantity <= 0"
-                        (click)="onPurchase()"></button>
-              </div>
-            </form>
+            <div class="col-12 md:col-5">
+              <form class="p-fluid flex flex-column md:flex-row align-items-center gap-3">
+                <div class="quantity-field flex-auto">
+                  <label for="quantity" class="block mb-1">Quantity</label>
+                  <p-inputNumber id="quantity"
+                                [(ngModel)]="state().quantity"
+                                [ngModelOptions]="{standalone: true}"
+                                [showButtons]="true"
+                                [min]="1"
+                                buttonLayout="horizontal"
+                                inputId="horizontal"
+                                decrementButtonClass="p-button-secondary"
+                                incrementButtonClass="p-button-secondary">
+                  </p-inputNumber>
+                </div>
+                <div class="flex-auto mt-3 md:mt-4">
+                  <button pButton
+                          label="Purchase Stock"
+                          icon="pi pi-shopping-cart"
+                          class="p-button-success premium-button"
+                          [disabled]="state().quantity <= 0"
+                          (click)="onPurchase()"></button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
-      </div>
-    }
+      }
   }
-</div>
 
-<!-- Purchase Dialog with Tutor Question -->
+
 <p-dialog [(visible)]="state().showPurchasingDialog"
           [modal]="true"
           [closable]="false"
@@ -122,12 +118,12 @@
           [style]="{ width: '500px' }">
   <div class="purchase-dialog-content">
     <!-- Purchase Summary -->
-    @if (stockStore.currentStock()) {
+    @if (stockStore.currentStock().tickerSymbol != '') {
       <div class="purchase-summary mb-4">
         <div class="surface-100 p-3 border-round">
           <div class="flex justify-content-between mb-3">
             <span class="font-medium">Stock:</span>
-            <span class="font-bold">{{ stockStore.currentStock().tickerSymobol }}</span>
+            <span class="font-bold">{{ stockStore.currentStock().tickerSymbol }}</span>
           </div>
           <div class="flex justify-content-between mb-3">
             <span class="font-medium">Price per Share:</span>
@@ -147,7 +143,7 @@
 
       <!-- Tutor Question Section -->
       <div class="tutor-question-section">
-        <h3 class="text-lg font-medium mb-3">Answer this question about {{ stockStore.currentStock().tickerSymobol }} to complete your purchase:</h3>
+        <h3 class="text-lg font-medium mb-3">Answer this question about {{ stockStore.currentStock().tickerSymbol }} to complete your purchase:</h3>
 
         @if (tutorStore.isLoading()) {
           <div class="flex flex-column align-items-center justify-content-center p-4">
@@ -159,14 +155,14 @@
             <div class="question mb-3">{{ tutorStore.currentTutorQuestion().question }}</div>
 
             <div class="answer-options">
-              @for (option of tutorStore.currentTutorQuestion().answers; track option) {
+              @for (option of tutorStore.currentTutorQuestion().answers; track option.option) {
                 <div class="field-radiobutton mb-2">
                   <p-radioButton [inputId]="option.option"
                                 name="answer"
                                 [value]="option"
                                 [(ngModel)]="state().selectedAnswer">
                   </p-radioButton>
-                  <label [for]="option" class="ml-2">{{ option }}</label>
+                  <label [for]="option.option" class="ml-2">{{ option.option }}</label>
                 </div>
               }
             </div>

@@ -19,6 +19,8 @@ public class TutorQuestion {
         this.isCorrect = isCorrect;
     }
 
+    public TutorQuestion() {}
+
     public boolean isCorrect() {
         return isCorrect;
     }

@@ -6,11 +6,12 @@ import {
   withState,
 } from '@ngrx/signals';
 import { setAllEntities, withEntities } from '@ngrx/signals/entities';
+import { inject } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
+
 import { initialStockStoreState } from './stock-store.state';
 import { Stock } from '../../models';
 import { StockService } from '../../services/stocks/stocks.services';
-import { inject } from '@angular/core';
-import { firstValueFrom } from 'rxjs';
 
 const collection = 'stock';
 
@@ -36,7 +37,7 @@ export const StockStore = signalStore(
             store,
             setAllEntities(items, {
               collection: collection,
-              selectId: (stock: Stock) => stock.tickerSymobol,
+              selectId: (stock: Stock) => stock.tickerSymbol,
             }),
             {
               isLoading: false,
@@ -47,13 +48,14 @@ export const StockStore = signalStore(
       } catch (error) {
         console.error(error);
       }
+
       return true;
     },
 
     resolveStock: async (tickerSymbol: string) => {
       const stock = store
         .stockEntities()
-        .find((stock) => stock.tickerSymobol === tickerSymbol);
+        .find((stock) => stock.tickerSymbol === tickerSymbol);
       patchState(store, {
         currentStock: stock,
       });

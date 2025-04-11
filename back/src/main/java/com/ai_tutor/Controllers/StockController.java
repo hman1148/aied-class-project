@@ -42,16 +42,9 @@ public class StockController {
         String ticker = request.getTickerSymbol();
         int quantity = request.getQuantity();
 
-        Stock stock = new Stock(ticker, quantity, 0, ticker);
-        boolean success = this.stockService.updateStockFromAPI(stock);
+        Stock stock = this.stockService.getStocksMap().get(ticker);
 
-        if (!success) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new ItemResponse<String>("", "Failed to retrieve stock data", false));
-        }
-
-        stock.setPurchasedValue(stock.getPrice());
+        stock.setPurchasedValue(stock.getPrice() * quantity);
         stock.updateProfit();
 
         boolean added = this.portfolioService.addStock(stock);

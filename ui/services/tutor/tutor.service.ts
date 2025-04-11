@@ -25,7 +25,7 @@ export class TutorService {
   }
 
   getStockQuestion(ticker: string): Observable<ItemResponse<TutorQuestion>> {
-    const url = this.env.apiUrl() + Apis.Tutor + Page.Question + ticker;
+    const url = this.env.apiUrl() + Apis.Tutor + Page.Question + '/' + ticker;
     return this.http.get<ItemResponse<TutorQuestion>>(url);
   }
 
@@ -36,7 +36,8 @@ export class TutorService {
 
   getAnswer(selectedQuestion: string): Observable<ItemResponse<CorrectAnswer>> {
     const url = this.env.apiUrl() + Apis.Tutor + Page.Answer;
-    return this.http.post<ItemResponse<CorrectAnswer>>(url, selectedQuestion);
+    const requestBody = { selectedQuestion: selectedQuestion };
+    return this.http.post<ItemResponse<CorrectAnswer>>(url, requestBody);
   }
 
   getHistory(): Observable<ItemsResponse<TutorQuestion>> {

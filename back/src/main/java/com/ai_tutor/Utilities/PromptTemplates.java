@@ -52,12 +52,11 @@ public class PromptTemplates {
 
     public static final String GPT_REQUEST_TEMPLATE = """
         {
-            "model": "gpt-3.5-turbo",
+            "model": "gpt-4",
             "messages": [
                 {"role": "system", "content": "You are an investing tutor with up-to-date knowledge about financial markets and investment strategies."},
                 {"role": "user", "content": "%s"}
             ],
-            "temperature": 0.7
         }
         """;
 

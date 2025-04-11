@@ -67,7 +67,7 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     this.totalCorrectQuestions = this.tutorStore
       .tutorEntities()
-      .filter((q) => q.isCorrect).length;
+      .filter((q) => q.correct).length;
 
     this.menuItems = [
       {
@@ -96,7 +96,7 @@ export class AppComponent implements OnInit {
   calculateLearningProgress(): number {
     const entities = this.tutorStore.tutorEntities();
     if (entities && entities.length > 0) {
-      const correctAnswers = entities.filter((q) => q.isCorrect).length;
+      const correctAnswers = entities.filter((q) => q.correct).length;
       this.learningProgress = (correctAnswers / entities.length) * 100;
     }
 

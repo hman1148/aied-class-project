@@ -1,12 +1,12 @@
 import { Answer, initialAnswer } from '../answer/answer.model';
 
 export type TutorQuestion = {
-  id: string;
+  id?: string;
   question: string;
   answers: Answer[];
   correctAnswer: Answer;
   userAnswer: Answer;
-  isCorrect: boolean;
+  correct: boolean;
 };
 
 export const initialTutorQuestion = (): TutorQuestion => ({
@@ -15,5 +15,5 @@ export const initialTutorQuestion = (): TutorQuestion => ({
   answers: [],
   correctAnswer: initialAnswer(),
   userAnswer: initialAnswer(),
-  isCorrect: false,
+  correct: false,
 });

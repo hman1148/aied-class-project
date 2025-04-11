@@ -1,0 +1,36 @@
+services:
+  # Backend service
+  aied-stock-tutor:
+    image: 'aied-stock-tutor-back'
+    build:
+      context: ./back
+      dockerfile: Dockerfile
+    ports:
+      - '8000:8080'
+    env_file:
+      - .env
+    environment:
+      - CORS_ALLOWED_ORIGINS=http://localhost:4200
+    networks:
+      - tutor-network
+
+  # Frontend service
+  aied-stock-tutor-frontend:
+    image: 'aied-stock-tutor-frontend'
+    build:
+      context: ./ui
+      dockerfile: Dockerfile
+    ports:
+      - '4200:80'
+    depends_on:
+      - aied-stock-tutor
+    volumes:
+      - ./ui:/app 
+      - /app/node_modules
+    networks:
+      - tutor-network
+    
+
+networks:
+  tutor-network:
+    driver: bridge

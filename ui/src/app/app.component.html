@@ -135,8 +135,8 @@
                   <ul class="activity-list">
                     @for (item of tutorStore.tutorEntities().slice(0, 5); track item.id) {
                       <li class="activity-item animate-in">
-                        <div class="activity-icon" [ngClass]="item.isCorrect ? 'activity-success' : 'activity-error'">
-                          <i class="pi" [ngClass]="item.isCorrect ? 'pi-check-circle' : 'pi-times-circle'"></i>
+                        <div class="activity-icon" [ngClass]="item.correct ? 'activity-success' : 'activity-error'">
+                          <i class="pi" [ngClass]="item.correct ? 'pi-check-circle' : 'pi-times-circle'"></i>
                         </div>
                         <div class="activity-content">
                           <div class="activity-title">{{ item.question }}</div>
@@ -187,17 +187,17 @@
                              (click)="stockStore.resolveStocks()"></p-button>
                   </div>
                   <div class="stock-highlights">
-                    @for (stock of stockStore.stockEntities().slice(0, 5); track stock.tickerSymobol) {
+                    @for (stock of stockStore.stockEntities().slice(0, 5); track stock.tickerSymbol) {
                       <div class="stock-card">
                         <div class="stock-header">
-                          <span class="stock-symbol">{{ stock.tickerSymobol }}</span>
+                          <span class="stock-symbol">{{ stock.tickerSymbol }}</span>
                           <span class="stock-change" [ngClass]="stock.changePercent >= 0 ? 'text-green-600' : 'text-red-600'">
                             <i class="pi" [ngClass]="stock.changePercent >= 0 ? 'pi-arrow-up' : 'pi-arrow-down'"></i>
                             {{ stock.changePercent >= 0 ? '+' : '' }}{{ stock.changePercent | number:'1.2-2' }}%
                           </span>
                         </div>
                         <div class="stock-price">${{ stock.price | number:'1.2-2' }}</div>
-                        <div class="stock-company">{{ stock.tickerSymobol || 'Company Name' }}</div>
+                        <div class="stock-company">{{ stock.tickerSymbol || 'Company Name' }}</div>
                       </div>
                     }
                   </div>

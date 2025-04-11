@@ -10,6 +10,7 @@ import com.ai_tutor.Services.GptService;
 import com.ai_tutor.Services.PortfolioService;
 import com.ai_tutor.Services.StockService;
 import com.ai_tutor.Services.TutorService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +34,6 @@ public class TutorController {
     @Autowired
     private final PortfolioService portfolioService;
 
-    private TutorQuestion currentQuestion;
     private final ArrayList<TutorQuestion> questionHistory = new ArrayList<>();
 
     public TutorController(TutorService tutorService, GptService gptService,
@@ -45,25 +45,27 @@ public class TutorController {
     }
 
     @GetMapping("/question")
-    public ResponseEntity<ItemResponse<TutorQuestion>> getQuestion() {
+    public ResponseEntity<ItemResponse<TutorQuestion>> getQuestion() throws JsonProcessingException {
         TutorQuestion tutorQuestion = this.gptService.generateTutorQuestion();
-        this.currentQuestion = tutorQuestion;
+        this.tutorService.setCurrentQuestion(tutorQuestion);
 
         ItemResponse<TutorQuestion> response = new ItemResponse<>(tutorQuestion, "Question generated successfully", true);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/question/{ticker}")
-    public ResponseEntity<?> getQuestion(@RequestParam String ticker) {
+    public ResponseEntity<?> getQuestion(@PathVariable String ticker) {
         Stock foundStock = this.stockService.getStocksMap().get(ticker);
 
         try {
             TutorQuestion tutorQuestion = this.gptService.generateTutorQuestion(foundStock);
-
             if (tutorQuestion == null) {
                 ItemResponse<String> failedResponse = new ItemResponse<>("Failed response", "Failed to generate question", false);
                 return ResponseEntity.badRequest().body(failedResponse);
             }
+
+            this.tutorService.setCurrentQuestion(tutorQuestion);
+
             ItemResponse<TutorQuestion> successData = new ItemResponse<>(tutorQuestion, "Generated Question", true);
             return ResponseEntity.ok(successData);
         } catch (Exception ex) {
@@ -83,6 +85,8 @@ public class TutorController {
                 return ResponseEntity.badRequest().body(failedResponse);
             }
 
+            this.tutorService.setCurrentQuestion(tutorQuestion);
+
             ItemResponse<TutorQuestion> successData = new ItemResponse<>(tutorQuestion, "Generated Question", true);
             return ResponseEntity.ok(successData);
         } catch (Exception ex) {
@@ -95,21 +99,21 @@ public class TutorController {
     public ResponseEntity<ItemResponse<HashMap<String, Object>>> getStudentResponse
             (@RequestBody StudentAnswerRequest studentAnswerRequest) {
 
-        if (currentQuestion == null) {
+        if (this.tutorService.getCurrentQuestion() == null) {
             return ResponseEntity.badRequest().body(new ItemResponse<>(null, "No question generated", false));
         }
 
         String selectedQuestion = studentAnswerRequest.getSelectedQuestion();
-        currentQuestion.setUserAnswer(selectedQuestion);
+        this.tutorService.getCurrentQuestion().setUserAnswer(selectedQuestion);
 
         // Check if answer is correct
-        boolean isCorrect = currentQuestion.getCorrectAnswer().getOption().equals(selectedQuestion);
-        currentQuestion.setCorrect(isCorrect);
+        boolean isCorrect = this.tutorService.getCurrentQuestion().getCorrectAnswer().getOption().equals(selectedQuestion);
+        this.tutorService.getCurrentQuestion().setCorrect(isCorrect);
 
         // Add question to history
-        questionHistory.add(currentQuestion);
+        questionHistory.add(this.tutorService.getCurrentQuestion());
 
-        double profit = this.gptService.getProfit(currentQuestion);
+        double profit = this.gptService.getProfit(this.tutorService.getCurrentQuestion());
         if (isCorrect) {
             this.portfolioService.setProfit(profit);
         } else {
@@ -118,8 +122,8 @@ public class TutorController {
 
         HashMap<String, Object> responseData = new HashMap<>();
         responseData.put("isCorrect", isCorrect);
-        responseData.put("correctAnswer", currentQuestion.getCorrectAnswer());
-        responseData.put("explanation", currentQuestion.getCorrectAnswer().getExplanation());
+        responseData.put("correctAnswer", this.tutorService.getCurrentQuestion().getCorrectAnswer());
+        responseData.put("explanation", this.tutorService.getCurrentQuestion().getCorrectAnswer().getExplanation());
         responseData.put("portfolioChange", profit);
         responseData.put("newPortfolioBalance", this.portfolioService.getCashRemaining());
 
@@ -139,7 +143,7 @@ public class TutorController {
     @DeleteMapping("/reset-history")
     public ResponseEntity<ItemResponse<String>> resetQuestionHistory() {
         this.questionHistory.clear();
-        currentQuestion = null;
+        this.tutorService.setCurrentQuestion(null);
 
         ItemResponse<String> response = new ItemResponse<>("Question history reset successfully",
                 "Question history reset successfully", true);

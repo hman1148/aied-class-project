@@ -1,0 +1,38 @@
+# Dependencies
+node_modules
+npm-debug.log
+
+# Build output
+dist
+tmp
+out-tsc
+bazel-out
+
+# Testing
+coverage
+.nyc_output
+
+# IDEs and editors
+.idea/
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+.vscode/*
+
+# Version control
+.git
+.github
+.gitignore
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Large files and assets that are generated during build
+*.mp4
+*.mov
+*.zip
+*.tar.gz

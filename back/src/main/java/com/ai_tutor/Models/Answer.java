@@ -5,11 +5,13 @@ public class Answer {
     private double cost;
     private String explanation;
 
-    public Answer(String option, String explanation ,double cost) {
+    public Answer(String option, String explanation, double cost) {
         this.option = option;
         this.cost = cost;
         this.explanation = explanation;
     }
+
+    public Answer() {}
 
     public String getExplanation() {
         return explanation;

@@ -42,6 +42,7 @@ export const HistoryStore = signalStore(
               store,
               setAllEntities(items, {
                 collection: collection,
+                selectId: (tutor: TutorQuestion) => tutor.question,
               }),
               {
                 isEntitiesLoaded: true,

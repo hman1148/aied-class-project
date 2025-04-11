@@ -1,5 +1,5 @@
 export type Stock = {
-  tickerSymobol: string;
+  tickerSymbol: string;
   open: number;
   high: number;
   low: number;
@@ -22,7 +22,7 @@ export const initialStockPurchaseRequest = (): StockPurchaseRequest => ({
 });
 
 export const inintialStock = (): Stock => ({
-  tickerSymobol: '',
+  tickerSymbol: '',
   open: 0,
   high: 0,
   low: 0,

@@ -14,6 +14,8 @@ public class TutorService {
 
     private List<String> answerHistory;
 
+    private TutorQuestion currentQuestion;
+
     public TutorService(GptService gptService, PortfolioService portfolioService) {
         this.gptService = gptService;
         this.portfolioService = portfolioService;
@@ -30,6 +32,14 @@ public class TutorService {
         }
 
         this.answerHistory.add(tutorQuestion.getCorrectAnswer().getExplanation());
+    }
+
+    public TutorQuestion getCurrentQuestion() {
+        return currentQuestion;
+    }
+
+    public void setCurrentQuestion(TutorQuestion currentQuestion) {
+        this.currentQuestion = currentQuestion;
     }
 }
 

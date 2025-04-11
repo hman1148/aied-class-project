@@ -1,12 +1,14 @@
 package com.ai_tutor.Models.Requests;
 
-public class    StudentAnswerRequest {
+public class StudentAnswerRequest {
 
     private String selectedQuestion;
 
     public StudentAnswerRequest(String selectedQuestion) {
         this.selectedQuestion = selectedQuestion;
     }
+
+    public StudentAnswerRequest() {}
 
     public String getSelectedQuestion() {
         return selectedQuestion;

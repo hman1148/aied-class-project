@@ -40,7 +40,7 @@ export const TutorStore = signalStore(
                 store,
                 setAllEntities(items, {
                   collection: collection,
-                  selectId: (tutor: TutorQuestion) => tutor.id,
+                  selectId: (tutor: TutorQuestion) => tutor.question,
                 }),
                 { isEntitiesLoaded: true }
               );
@@ -71,7 +71,7 @@ export const TutorStore = signalStore(
               store,
               addEntity(item, {
                 collection: collection,
-                selectId: (tutor: TutorQuestion) => tutor.id,
+                selectId: (tutor: TutorQuestion) => tutor.question,
               }),
               {
                 currentTutorQuestion: item,
@@ -134,7 +134,7 @@ export const TutorStore = signalStore(
                 store,
                 addEntity(item, {
                   collection: collection,
-                  selectId: (tutor: TutorQuestion) => tutor.id,
+                  selectId: (tutor: TutorQuestion) => tutor.question,
                 }),
                 {
                   currentTutorQuestion: item,

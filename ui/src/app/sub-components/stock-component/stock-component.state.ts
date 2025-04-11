@@ -1,4 +1,4 @@
-import { inintialStock, Stock, TutorQuestion } from '../../../../models';
+import { inintialStock, Stock } from '../../../../models';
 
 export type StockComponentState = {
   quantity: number;

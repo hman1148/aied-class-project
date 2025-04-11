@@ -2,25 +2,51 @@
   padding: 1rem;
 
   ::ng-deep {
-    .p-datatable .p-datatable-thead > tr > th {
-      background-color: var(--surface-section);
-      font-weight: 600;
+    .p-datatable {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      border-radius: 12px;
+      overflow: hidden;
+
+      .p-datatable-thead > tr > th {
+        background-color: var(--surface-section);
+        font-weight: 600;
+        padding: 1rem;
+      }
+
+      .p-datatable-tbody > tr.p-highlight {
+        background-color: var(--primary-50);
+      }
+
+      .p-datatable-tbody > tr:hover {
+        background-color: var(--surface-hover);
+      }
+
+      .p-datatable-tbody > tr > td {
+        padding: 0.75rem 1rem;
+      }
     }
 
-    .p-datatable .p-datatable-tbody > tr.p-highlight {
-      background-color: var(--primary-50);
-    }
-
-    .p-datatable .p-datatable-tbody > tr:hover {
-      background-color: var(--surface-hover);
+    .p-button {
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
     }
   }
 }
 
 .purchase-panel {
   background-color: var(--surface-card);
-  border-radius: var(--border-radius);
-  box-shadow: var(--card-shadow);
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s, box-shadow 0.2s;
+  overflow: hidden;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  }
 }
 
 .purchase-dialog-content {
@@ -34,14 +60,77 @@
     .question-container {
       background-color: var(--surface-ground);
       border: 1px solid var(--surface-border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
     }
 
     .question {
       font-weight: 500;
+      font-size: 1.1rem;
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+
+    .answer-options {
+      .field-radiobutton {
+        padding: 0.75rem;
+        border-radius: 8px;
+        transition: background-color 0.2s;
+
+        &:hover {
+          background-color: var(--surface-hover);
+        }
+
+        label {
+          font-size: 1rem;
+        }
+      }
     }
   }
 }
 
+// Fade-in animation for newly displayed elements
+@keyframes fadeIn {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+// Stock selection styling
+.stock-selection {
+  border-left: 3px solid var(--primary-color);
+  background: linear-gradient(90deg, rgba(var(--primary-color-rgb), 0.05) 0%, rgba(var(--primary-color-rgb), 0) 100%);
+}
+
+// Dialog styling consistent with app component
+::ng-deep {
+  .p-dialog {
+    .p-dialog-header {
+      background: linear-gradient(45deg, var(--primary-color), #8e5cf8);
+      color: white;
+    }
+
+    .p-dialog-content {
+      padding: 1.5rem;
+    }
+
+    .p-button {
+      border-radius: 8px;
+      transition: transform 0.2s, box-shadow 0.2s;
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      }
+    }
+  }
+}
+
+// Match the color helpers from app.component.scss
 .text-green-600 {
   color: var(--green-600);
 }
